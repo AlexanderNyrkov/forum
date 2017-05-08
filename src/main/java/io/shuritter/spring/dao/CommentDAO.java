@@ -1,0 +1,10 @@
+package io.shuritter.spring.dao;
+
+import io.shuritter.spring.model.Comment;
+
+import java.util.List;
+
+
+public interface CommentDAO extends BaseDAO<Comment> {
+    List<Comment> list(String postId);
+}
