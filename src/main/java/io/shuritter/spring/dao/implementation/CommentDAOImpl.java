@@ -5,20 +5,20 @@ import io.shuritter.spring.dao.CommentDAO;
 import io.shuritter.spring.model.Comment;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.inject.Inject;
 import java.util.List;
 
 @Repository("commentDao")
 public class CommentDAOImpl extends BaseDAOImpl<Comment> implements BaseDAO<Comment>, CommentDAO {
     private static final Logger logger = LoggerFactory.getLogger(CommentDAOImpl.class);
+
     private SessionFactory sessionFactory;
 
-    @Autowired
+    @Inject
     public void setSessionFactory(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
@@ -33,26 +33,22 @@ public class CommentDAOImpl extends BaseDAOImpl<Comment> implements BaseDAO<Comm
     @Override
     public void add(Comment comment) {
         Session session = this.sessionFactory.getCurrentSession();
-        session.save(comment);
+        session.saveOrUpdate(comment);
         logger.info("Comment add: " + comment);
     }
 
     @Override
-    public List<Comment> list(String postId) {
+    public List<Comment> getAll(String postId) {
         Session session = this.sessionFactory.getCurrentSession();
-        Query query = session.createQuery("FROM Comment c WHERE c.post=: postId AND " +
-                "c.is_deleted = FALSE");
-        query.setParameter("postId", postId);
-        List<Comment> comments = query.list();
-        logger.info("User list: " + comments.toString());
-        return comments;
+        return session.createQuery("FROM Comment c WHERE c.post = :postId AND c.isDeleted = FALSE")
+                .setParameter("postId", postId).list();
     }
 
     @Override
-    public List<Comment> list() {
+    public List<Comment> getAll() {
         Session session = this.sessionFactory.getCurrentSession();
-        List<Comment> comments = session.createQuery("FROM Comment").list();
-        logger.info("User list: " + comments.toString());
+        List<Comment> comments = session.createQuery("FROM Comment c WHERE c.isDeleted = FALSE").list();
+        logger.info("User getAll: " + comments.toString());
         return comments;
     }
 
@@ -65,22 +61,16 @@ public class CommentDAOImpl extends BaseDAOImpl<Comment> implements BaseDAO<Comm
     @Override
     public void delete(String id) {
         Session session = this.sessionFactory.getCurrentSession();
-        Comment comment = (Comment) session.load(Comment.class, new String(id));
-
-        if(comment!=null){
-            Query delete = session.createQuery("UPDATE Comment c SET c.is_deleted = true, c.updated_at = current_date " +
-                    "WHERE c.id=: id");
-            delete.setParameter("id", id);
-            delete.executeUpdate();
+        if (getById(id) != null) {
+            session.createQuery("UPDATE Comment c SET c.isDeleted = TRUE WHERE c.id = :id AND c.isDeleted = FALSE ").
+                    setParameter("id", id).executeUpdate();
             logger.info("Comment deleted");
         }
     }
 
     @Override
     public Comment getById(String id) {
-        Session session =this.sessionFactory.getCurrentSession();
-        Comment comment = (Comment) session.load(Comment.class, new String(id));
-
-        return comment;
+        Session session = this.sessionFactory.getCurrentSession();
+        return (Comment) session.createQuery("FROM Comment c WHERE c.id = :id AND c.isDeleted = FALSE ").setParameter("id", id).uniqueResult();
     }
 }

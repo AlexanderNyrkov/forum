@@ -1,13 +1,12 @@
 CREATE TABLE public.comment
 (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY NOT NULL,
-  author UUID NOT NULL,
-  create_date DATE DEFAULT current_date NOT NULL,
-  text TEXT NOT NULL,
+  user_id UUID NOT NULL REFERENCES "user" (id),
   like_count BIGINT DEFAULT 0,
-  update_date DATE,
-  post UUID NOT NULL,
-  CONSTRAINT comment_post_id_fk FOREIGN KEY (post) REFERENCES post (id) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT comment_user_id_fk FOREIGN KEY (author) REFERENCES "user" (id) ON DELETE CASCADE ON UPDATE CASCADE
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  text TEXT NOT NULL,
+  post_id UUID NOT NULL REFERENCES post (id),
+  is_deleted BOOLEAN DEFAULT FALSE
 );
 CREATE UNIQUE INDEX comment_id_uindex ON public.comment (id);

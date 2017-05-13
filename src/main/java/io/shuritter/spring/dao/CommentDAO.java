@@ -6,5 +6,5 @@ import java.util.List;
 
 
 public interface CommentDAO extends BaseDAO<Comment> {
-    List<Comment> list(String postId);
+    List<Comment> getAll(String postId);
 }

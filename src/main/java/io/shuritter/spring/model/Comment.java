@@ -1,91 +1,81 @@
 package io.shuritter.spring.model;
 
-import org.hibernate.annotations.Type;
-import org.joda.time.DateTime;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
-import static org.springframework.format.annotation.DateTimeFormat.ISO.DATE;
+import static org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME;
 
 @Entity
-@Table(name = "COMMENT")
+@Table(name = "COMMENT", schema = "PUBLIC")
 public class Comment extends BaseEntity implements Serializable{
 
-    @Column(name = "AUTHOR")
     @ManyToOne
-    @JoinColumn(name = "ID", nullable = false)
-    private User author;
+    @JoinColumn(name = "USER_ID")
+    private User user;
 
     @Column(name = "LIKE_COUNT")
-    private Long like;
+    private Long like = 0L;
 
     @Column(name = "CREATED_AT")
-    @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentDateTime")
-    @DateTimeFormat(iso = DATE)
-    private DateTime create;
+    @DateTimeFormat(iso = DATE_TIME)
+    private static final LocalDateTime createdAt = LocalDateTime.now();
 
     @Column(name = "UPDATED_AT")
-    @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentDateTime")
-    @DateTimeFormat(iso = DATE)
-    private DateTime update;
+    @DateTimeFormat(iso = DATE_TIME)
+    private LocalDateTime updatedAt = LocalDateTime.now();
 
     @Column(name = "TEXT")
     private String text;
 
-    @Column(name = "POST")
     @ManyToOne
-    @JoinColumn(name = "ID")
-    private Post postId;
+    @JoinColumn(name = "POST_ID")
+    private Post post;
 
     @Column(name = "IS_DELETED")
-    private Boolean deleted;
+    private Boolean isDeleted = false;
 
     public Comment() {
+
     }
 
-    public Comment(User author, Long like, DateTime create, DateTime update, String text, Post postId, boolean deleted) {
-        this.author = author;
+    public Comment(User user, Long like, LocalDateTime updatedAt, String text, Post post, Boolean isDeleted) {
         this.like = like;
-        this.create = create;
-        this.update = update;
+        this.updatedAt = updatedAt;
         this.text = text;
-        this.postId = postId;
-        this.deleted = deleted;
+        this.post = post;
+        this.isDeleted = isDeleted;
     }
 
-    public User getAuthor() {
-        return author;
+    public User getUser() {
+        return user;
     }
 
-    public void setAuthor(User author) {
-        this.author = author;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Long getLike() {
         return like;
     }
 
-    public void setLike(Long likesCount) {
-        this.like = likesCount;
+    public void setLike(Long like) {
+        this.like = like;
     }
 
-    public DateTime getCreate() {
-        return create;
+    public LocalDateTime getCreate() {
+        return createdAt;
     }
 
-    public void setCreate(DateTime dateOfComment) {
-        this.create = dateOfComment;
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
-    public DateTime getUpdate() {
-        return update;
-    }
-
-    public void setUpdate(DateTime update) {
-        this.update = update;
+    public void setUpdatedAt(LocalDateTime update) {
+        this.updatedAt = update;
     }
 
     public String getText() {
@@ -96,59 +86,61 @@ public class Comment extends BaseEntity implements Serializable{
         this.text = text;
     }
 
-    public Post getPostId() {
-        return postId;
+    public Post getPost() {
+        return post;
     }
 
-    public void setPostId(Post postId) {
-        this.postId = postId;
+    public void setPost(Post post) {
+        this.post = post;
     }
 
-    public boolean isDeleted() {
-        return deleted;
+    public Boolean isDeleted() {
+        return isDeleted;
     }
 
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
+    public void setDeleted(Boolean deleted) {
+        this.isDeleted = deleted;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
 
         Comment comment = (Comment) o;
 
-        if (deleted != comment.deleted) return false;
-        if (id != null ? !id.equals(comment.id) : comment.id != null) return false;
-        if (author != null ? !author.equals(comment.author) : comment.author != null) return false;
+        if (user != null ? !user.equals(comment.user) : comment.user != null) return false;
         if (like != null ? !like.equals(comment.like) : comment.like != null) return false;
-        if (create != null ? !create.equals(comment.create) : comment.create != null) return false;
-        if (update != null ? !update.equals(comment.update) : comment.update != null) return false;
+        if (!createdAt.equals(createdAt)) return false;
+        if (updatedAt != null ? !updatedAt.equals(comment.updatedAt) : comment.updatedAt != null) return false;
         if (text != null ? !text.equals(comment.text) : comment.text != null) return false;
-        return postId != null ? postId.equals(comment.postId) : comment.postId == null;
+        if (post != null ? !post.equals(comment.post) : comment.post != null) return false;
+        return isDeleted != null ? isDeleted.equals(comment.isDeleted) : comment.isDeleted == null;
     }
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (author != null ? author.hashCode() : 0);
+        int result = super.hashCode();
+        result = 31 * result + (user != null ? user.hashCode() : 0);
         result = 31 * result + (like != null ? like.hashCode() : 0);
-        result = 31 * result + (create != null ? create.hashCode() : 0);
-        result = 31 * result + (update != null ? update.hashCode() : 0);
+        result = 31 * result + createdAt.hashCode();
+        result = 31 * result + (updatedAt != null ? updatedAt.hashCode() : 0);
         result = 31 * result + (text != null ? text.hashCode() : 0);
-        result = 31 * result + (postId != null ? postId.hashCode() : 0);
-        result = 31 * result + (deleted ? 1 : 0);
+        result = 31 * result + (post != null ? post.hashCode() : 0);
+        result = 31 * result + (isDeleted != null ? isDeleted.hashCode() : 0);
         return result;
     }
 
     @Override
     public String toString() {
-        return "id=" + id + ", author=" + author +
-                ", likes count=" + like +
-                ", date of comment=" + create +
-                ", date of update comment=" + update +
-                ", text: " + text +
-                "post id =" + postId;
+        return "Comment{" +
+                "id='" + id + '\'' +
+                ", like=" + like +
+                ", createdAt=" + createdAt +
+                ", update=" + updatedAt +
+                ", text='" + text + '\'' +
+                ", deleted=" + isDeleted +
+                '}';
     }
 }

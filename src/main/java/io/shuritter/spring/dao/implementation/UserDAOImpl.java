@@ -5,27 +5,23 @@ import io.shuritter.spring.dao.UserDAO;
 import io.shuritter.spring.model.User;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.inject.Inject;
 import java.util.List;
 
-@Repository("userDao")
+@Repository("userDAO")
 public class UserDAOImpl extends BaseDAOImpl<User> implements BaseDAO<User>, UserDAO {
     private static final Logger logger = LoggerFactory.getLogger(UserDAOImpl.class);
+
     private SessionFactory sessionFactory;
 
-    @Autowired
+    @Inject
     public void setSessionFactory(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
-    }
-
-    public SessionFactory getSessionFactory() {
-        return sessionFactory;
     }
 
     public UserDAOImpl() {
@@ -36,13 +32,12 @@ public class UserDAOImpl extends BaseDAOImpl<User> implements BaseDAO<User>, Use
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     @SuppressWarnings("unchecked")
-    public List<User> list() {
+    public List<User> getAll() {
         Session session = this.sessionFactory.getCurrentSession();
-        List<User> users = session.createQuery("FROM User u WHERE u.is_deleted = FALSE ").list();
-        logger.info("Book list: " + users.toString());
-
+        List<User> users = session.createQuery("FROM User u WHERE u.isDeleted = FALSE").list();
+        logger.info("User getAll: " + users.toString());
         return users;
     }
 
@@ -50,7 +45,7 @@ public class UserDAOImpl extends BaseDAOImpl<User> implements BaseDAO<User>, Use
     @Transactional
     public void add(User user) {
         Session session = this.sessionFactory.getCurrentSession();
-        session.persist(user);
+        session.saveOrUpdate(user);
         logger.info("User added");
     }
 
@@ -66,24 +61,16 @@ public class UserDAOImpl extends BaseDAOImpl<User> implements BaseDAO<User>, Use
     @Transactional
     public void delete(String id) {
         Session session = this.sessionFactory.getCurrentSession();
-        User user = session.load(User.class, new String(id));
-
-        if(user!=null){
-            Query query = session.createQuery("UPDATE User u SET u.is_deleted = TRUE WHERE u.id =: id");
-            query.setParameter("id", id);
-            logger.info("User successfully removed");
-        } else {
-            logger.info("User not found");
-        }
+        session.createQuery("UPDATE User u SET u.isDeleted = TRUE WHERE u.id = :id AND u.isDeleted = FALSE")
+                .setParameter("id", id).executeUpdate();
+        logger.info("User successfully removed");
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public User getById(String id) {
         Session session =this.sessionFactory.getCurrentSession();
-        User user = (User) session.load(User.class, new String(id));
-        logger.info("Book successfully loaded. Book details: ");
-
-        return user;
+        return (User)session.createQuery("FROM User u WHERE u.id = :id AND u.isDeleted = FALSE")
+                .setParameter("id", id).uniqueResult();
     }
 }

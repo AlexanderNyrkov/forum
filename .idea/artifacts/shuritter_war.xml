@@ -1,7 +1,7 @@
 <component name="ArtifactManager">
   <artifact type="war" name="shuritter:war">
     <output-path>$PROJECT_DIR$/target</output-path>
-    <root id="archive" name="Shuritter-1.0.0-BUILD-SNAPSHOT.war">
+    <root id="archive" name="shuritter-4.0-SNAPSHOT.war">
       <element id="artifact" artifact-name="shuritter:war exploded" />
     </root>
   </artifact>

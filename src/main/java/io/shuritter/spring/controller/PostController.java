@@ -1,8 +1,6 @@
 package io.shuritter.spring.controller;
 
-import io.shuritter.spring.model.Comment;
 import io.shuritter.spring.model.Post;
-import javafx.geometry.Pos;
 import org.springframework.http.ResponseEntity;
 
 public interface PostController extends BaseController<Post> {

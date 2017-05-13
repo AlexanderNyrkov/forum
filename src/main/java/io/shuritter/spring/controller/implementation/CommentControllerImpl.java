@@ -3,39 +3,41 @@ package io.shuritter.spring.controller.implementation;
 import io.shuritter.spring.controller.BaseController;
 import io.shuritter.spring.controller.CommentController;
 import io.shuritter.spring.model.Comment;
+import io.shuritter.spring.model.Post;
+import io.shuritter.spring.model.User;
 import io.shuritter.spring.service.CommentService;
 import io.shuritter.spring.service.PostService;
 import io.shuritter.spring.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.inject.Inject;
 import java.util.List;
 
-@Controller
+import static org.springframework.http.HttpStatus.*;
+
+@RestController
 public class CommentControllerImpl extends BaseControllerImpl<Comment> implements BaseController<Comment>, CommentController {
     private static final Logger logger = LoggerFactory.getLogger(CommentControllerImpl.class);
     private CommentService service;
     private UserService userService;
     private PostService postService;
 
-    @Autowired
+    @Inject
     public void setService(CommentService service) {
         this.service = service;
     }
 
-    @Autowired
+    @Inject
     public void setUserService(UserService userService) {
         this.userService = userService;
     }
 
-    @Autowired
+    @Inject
     public void setPostService(PostService postService) {
         this.postService = postService;
     }
@@ -43,64 +45,59 @@ public class CommentControllerImpl extends BaseControllerImpl<Comment> implement
     @PostMapping(value = "/users/{userId}/posts/{postId}/comments", consumes = "application/json")
     public ResponseEntity<Comment> add(@PathVariable("userId") String userId, @PathVariable("postId") String postId,
                                        @RequestBody Comment comment) {
-        userService.getById(userId);
-        postService.getById(postId);
-        service.add(comment);
+        User user = userService.getById(userId);
+        Post post = postService.getById(postId);
+        if (user == null || post == null) {
+            return new ResponseEntity<>(NOT_FOUND);
+        }
+        service.add(user, post, comment);
         logger.info("Comment added");
-        return new ResponseEntity<Comment>(new HttpHeaders(), HttpStatus.CREATED);
+        return new ResponseEntity<>(new HttpHeaders(), CREATED);
     }
 
     @GetMapping(value = "/users/{userId}/posts/{postId}/comments", produces = "application/json")
-    public ResponseEntity<List<Comment>> list(@PathVariable("userId") String userId, @PathVariable("postId") String postId) {
-        userService.getById(userId);
-        postService.getById(postId);
-        List<Comment> comments = service.list(postId);
-        return new ResponseEntity<List<Comment>>(comments, HttpStatus.OK);
+    public ResponseEntity<List<Comment>> getAll(@PathVariable("userId") String userId, @PathVariable("postId") String postId) {
+        if (userService.getById(userId) == null || postService.getById(postId) == null) {
+            return new ResponseEntity<>(NOT_FOUND);
+        }
+        List<Comment> comments = service.getAll(postId);
+        return new ResponseEntity<>(comments, OK);
     }
 
-    @GetMapping(value = "/users/posts{postId}/comments/{id}", produces = "application/json")
+    @GetMapping(value = "/users/{userId}/posts/{postId}/comments/{id}", produces = "application/json")
     public ResponseEntity<Comment> getById(@PathVariable("userId") String userId, @PathVariable("postId") String postId,
-                                           @PathVariable("id") String id, @RequestBody Comment comment) {
-        try {
-            userService.getById(userId);
-            postService.getById(postId);
-            service.getById(id);
-            return new ResponseEntity<Comment>(comment, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<Comment>(HttpStatus.NO_CONTENT);
+                                           @PathVariable("id") String id) {
+        if (userService.getById(userId) == null || postService.getById(postId) == null) {
+            return new ResponseEntity<>(NOT_FOUND);
         }
+        return new ResponseEntity<>(service.getById(id), OK);
+
     }
 
     @PutMapping(value = "/users/{userId}/posts/{postId}/comments/{id}", consumes = "application/json")
     public ResponseEntity<Comment> update(@PathVariable("userId") String userId, @PathVariable("postId") String postId, @PathVariable("id") String id, @RequestBody Comment comment) {
-        try {
-            userService.getById(userId);
-            postService.getById(postId);
-            service.getById(id);
-            service.update(comment);
-            logger.info("Comment updated");
-            return new ResponseEntity<Comment>(new HttpHeaders(), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<Comment>(new HttpHeaders(), HttpStatus.NO_CONTENT);
+        if (userService.getById(userId) == null || postService.getById(postId) == null) {
+            return new ResponseEntity<>(NOT_FOUND);
         }
+        service.update(userService.getById(userId), postService.getById(postId), comment, id);//test fff
+        logger.info("Comment updated");
+        return new ResponseEntity<>(new HttpHeaders(), OK);
     }
 
     @DeleteMapping(value = "users/{userId}/posts/{postId}/comments/{id}", consumes = "application/json")
     public ResponseEntity<Comment> delete(@PathVariable("userId") String userId, @PathVariable("postId") String postId,
                                           @PathVariable("id") String id, @RequestBody Comment comment) {
-        try {
-            userService.getById(userId);
-            postService.getById(postId);
-            service.delete(id);
-            logger.info("Comment with " + id + " id: " + comment);
-            return new ResponseEntity<Comment>(new HttpHeaders(), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<Comment>(new HttpHeaders(), HttpStatus.NO_CONTENT);
+
+        if (userService.getById(userId) == null || postService.getById(postId) == null) {
+            return new ResponseEntity<>(new HttpHeaders(), NOT_FOUND);
         }
+        service.delete(id, comment);
+        logger.info("Comment with " + id + " id: " + comment);
+        return new ResponseEntity<>(new HttpHeaders(), OK);
     }
 
     @Override
-    public ResponseEntity<List<Comment>> list() {
+    public ResponseEntity<List<Comment>> getAll() {
         return null;
     }
 
@@ -120,7 +117,8 @@ public class CommentControllerImpl extends BaseControllerImpl<Comment> implement
     }
 
     @Override
-    public ResponseEntity<Comment> getById(String id, Comment entity) {
+    public ResponseEntity<Comment> getById(String id) {
         return null;
     }
+
 }

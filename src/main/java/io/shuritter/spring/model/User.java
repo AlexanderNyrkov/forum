@@ -1,25 +1,25 @@
 package io.shuritter.spring.model;
 
-import org.hibernate.annotations.Type;
-import org.joda.time.DateTime;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.springframework.format.annotation.DateTimeFormat.ISO.DATE;
+import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.FetchType.LAZY;
+import static org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME;
 
 @Entity
-@Table(name = "USER")
+@Table(name = "USER", schema = "public")
 public class User extends BaseEntity implements Serializable {
+    private static final long serialVersionUID = 1L;
+    @Column(name = "NAME")
+    private String name;
 
     @Column(name = "LOGIN")
     private String login;
-
-    @Column(name = "NAME")
-    private String name;
 
     @Column(name = "PASSWORD")
     private String password;
@@ -27,31 +27,36 @@ public class User extends BaseEntity implements Serializable {
     @Column(name = "EMAIL")
     private String email;
 
-    @Column(name = "REGISTRY_DATE")
-    @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentDateTime")
-    @DateTimeFormat(iso = DATE)
-    private DateTime registry;
+    @Column(name = "CREATED_AT")
+    @DateTimeFormat(iso = DATE_TIME)
+    private static final LocalDateTime createdAt = LocalDateTime.now();
+
+    @Column(name = "UPDATED_AT")
+    private LocalDateTime updatedAt = LocalDateTime.now();
 
     @Column(name = "IS_DELETED")
-    private Boolean deleted;
+    private Boolean isDeleted = false;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
+    @OneToMany(fetch = LAZY, mappedBy="user", cascade = ALL)
     private List<Post> posts;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "author")
+    @OneToMany(fetch = LAZY, mappedBy = "user", cascade = ALL)
     private List<Comment> comments;
 
     public User() {
     }
 
-    public User(String login, String name, String password, String email, DateTime registry, List<Post> posts, List<Comment> comments) {
-        this.login = login;
+    public User(String name, String login, String password, String email, LocalDateTime updatedAt, Boolean isDeleted, List<Post> posts, List<Comment> comments) {
         this.name = name;
+        this.login = login;
         this.password = password;
         this.email = email;
-        this.registry = registry;
-        this.posts = posts;
-        this.comments = comments;
+        this.updatedAt = updatedAt;
+        this.isDeleted = isDeleted;
+    }
+
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
     }
 
     public String getName() {
@@ -86,55 +91,75 @@ public class User extends BaseEntity implements Serializable {
         this.email = email;
     }
 
-    public DateTime getRegistry() {
-        return registry;
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setRegistry(DateTime regisrty) {
-        this.registry = regisrty;
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public LocalDateTime getCreate() {
+        return createdAt;
+    }
+
+    public Boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.isDeleted = deleted;
+    }
+
+    public void setPosts(List<Post> posts) {
+        this.posts = posts;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
 
         User user = (User) o;
 
-        if (id != null ? !id.equals(user.id) : user.id != null) return false;
-        if (login != null ? !login.equals(user.login) : user.login != null) return false;
         if (name != null ? !name.equals(user.name) : user.name != null) return false;
+        if (login != null ? !login.equals(user.login) : user.login != null) return false;
         if (password != null ? !password.equals(user.password) : user.password != null) return false;
         if (email != null ? !email.equals(user.email) : user.email != null) return false;
-        if (registry != null ? !registry.equals(user.registry) : user.registry != null) return false;
-        if (posts != null ? !posts.equals(user.posts) : user.posts != null) return false;
-        return comments != null ? comments.equals(user.comments) : user.comments == null;
+        if (!createdAt.equals(user.createdAt)) return false;
+        if (updatedAt != null ? !updatedAt.equals(user.updatedAt) : user.updatedAt != null) return false;
+        return isDeleted != null ? isDeleted.equals(user.isDeleted) : user.isDeleted == null;
     }
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (login != null ? login.hashCode() : 0);
+        int result = super.hashCode();
         result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (login != null ? login.hashCode() : 0);
         result = 31 * result + (password != null ? password.hashCode() : 0);
         result = 31 * result + (email != null ? email.hashCode() : 0);
-        result = 31 * result + (registry != null ? registry.hashCode() : 0);
-        result = 31 * result + (posts != null ? posts.hashCode() : 0);
-        result = 31 * result + (comments != null ? comments.hashCode() : 0);
+        result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
+        result = 31 * result + (updatedAt != null ? updatedAt.hashCode() : 0);
+        result = 31 * result + (isDeleted != null ? isDeleted.hashCode() : 0);
         return result;
     }
 
     @Override
     public String toString() {
         return "User{" +
-                "id='" + id + '\'' +
-                ", login='" + login + '\'' +
-                ", name='" + name + '\'' +
-                ", password='" + password + '\'' +
-                ", email='" + email + '\'' +
-                ", registry=" + registry +
-                ", posts=" + posts +
-                ", comments=" + comments +
+                "id='" + id +
+                ", name='" + name +
+                ", login='" + login +
+                ", password='" + password +
+                ", email='" + email +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", deleted=" + isDeleted +
                 '}';
     }
 }

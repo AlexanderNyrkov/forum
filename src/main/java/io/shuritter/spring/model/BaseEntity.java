@@ -7,10 +7,10 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 @MappedSuperclass
 public abstract class BaseEntity implements Serializable {
-
+    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "ID", nullable = false)
+    @Column(name = "ID")
     protected String id;
 
     public String getId() {
@@ -20,6 +20,7 @@ public abstract class BaseEntity implements Serializable {
     public void setId(String id) {
         this.id = id;
     }
+
 
     @Override
     public boolean equals(Object o) {
