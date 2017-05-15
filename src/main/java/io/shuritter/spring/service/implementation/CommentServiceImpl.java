@@ -41,7 +41,8 @@ public class CommentServiceImpl extends BaseServiceImpl<Comment> implements Base
     }
 
     @Override
-    public List<Comment> getAll(String postId) {
+    @Transactional(readOnly = true)
+    public List<Comment> getAll(Post postId) {
         return DAO.getAll(postId);
     }
 

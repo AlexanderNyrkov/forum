@@ -42,7 +42,7 @@ public class PostDAOImpl extends BaseDAOImpl<Post> implements BaseDAO<Post>, Pos
     public Post getById(String id) {
         Session session = this.sessionFactory.getCurrentSession();
         logger.info("Post successfully loaded");
-        return (Post) session.createQuery("FROM Post p WHERE p.id = :id AND p.isDeleted = FALSE ")
+        return (Post) session.createQuery("FROM Post p WHERE p.id = :id")
                 .setParameter("id", id).uniqueResult();
     }
 
@@ -57,11 +57,7 @@ public class PostDAOImpl extends BaseDAOImpl<Post> implements BaseDAO<Post>, Pos
     @Override
     public List<Post> userPosts(String userId) {
         Session session = this.sessionFactory.getCurrentSession();
-//        List<Post> posts = session.createQuery("FROM Post p WHERE" +
-//                " concat(p.user, '')=:id AND p.deleted = FALSE ").setParameter("id", userId).list();
-//        List<User> users = session.createQuery("FROM User u WHERE u.deleted = FALSE").list();
-        return session.createQuery("FROM Post p WHERE p.user.id = :id" +
-                " AND p.isDeleted = FALSE").setParameter("id", userId).list();
+        return session.createQuery("FROM Post p WHERE p.user.id = :id").setParameter("id", userId).list();
     }
 
     @Override
@@ -75,7 +71,7 @@ public class PostDAOImpl extends BaseDAOImpl<Post> implements BaseDAO<Post>, Pos
     public void delete(String id) {
         Session session = this.sessionFactory.getCurrentSession();
         session.createQuery("UPDATE Post p SET p.isDeleted = TRUE " +
-                "WHERE p.id = :id AND p.isDeleted = FALSE").setParameter("id", id).executeUpdate();
+                "WHERE p.id = :id").setParameter("id", id).executeUpdate();
         logger.info("Post successfully removed");
 
     }

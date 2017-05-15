@@ -3,6 +3,7 @@ package io.shuritter.spring.dao.implementation;
 import io.shuritter.spring.dao.BaseDAO;
 import io.shuritter.spring.dao.CommentDAO;
 import io.shuritter.spring.model.Comment;
+import io.shuritter.spring.model.Post;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
@@ -38,10 +39,11 @@ public class CommentDAOImpl extends BaseDAOImpl<Comment> implements BaseDAO<Comm
     }
 
     @Override
-    public List<Comment> getAll(String postId) {
+    public List<Comment> getAll(Post postId) {
         Session session = this.sessionFactory.getCurrentSession();
-        return session.createQuery("FROM Comment c WHERE c.post = :postId AND c.isDeleted = FALSE")
+        List<Comment> comments = session.createQuery("FROM Comment c WHERE c.post = :postId AND c.isDeleted = FALSE")
                 .setParameter("postId", postId).list();
+        return  comments;
     }
 
     @Override
@@ -62,7 +64,7 @@ public class CommentDAOImpl extends BaseDAOImpl<Comment> implements BaseDAO<Comm
     public void delete(String id) {
         Session session = this.sessionFactory.getCurrentSession();
         if (getById(id) != null) {
-            session.createQuery("UPDATE Comment c SET c.isDeleted = TRUE WHERE c.id = :id AND c.isDeleted = FALSE ").
+            session.createQuery("UPDATE Comment c SET c.isDeleted = TRUE WHERE c.id = :id").
                     setParameter("id", id).executeUpdate();
             logger.info("Comment deleted");
         }
@@ -71,6 +73,6 @@ public class CommentDAOImpl extends BaseDAOImpl<Comment> implements BaseDAO<Comm
     @Override
     public Comment getById(String id) {
         Session session = this.sessionFactory.getCurrentSession();
-        return (Comment) session.createQuery("FROM Comment c WHERE c.id = :id AND c.isDeleted = FALSE ").setParameter("id", id).uniqueResult();
+        return (Comment) session.createQuery("FROM Comment c WHERE c.id = :id").setParameter("id", id).uniqueResult();
     }
 }

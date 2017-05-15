@@ -61,7 +61,7 @@ public class UserDAOImpl extends BaseDAOImpl<User> implements BaseDAO<User>, Use
     @Transactional
     public void delete(String id) {
         Session session = this.sessionFactory.getCurrentSession();
-        session.createQuery("UPDATE User u SET u.isDeleted = TRUE WHERE u.id = :id AND u.isDeleted = FALSE")
+        session.createQuery("UPDATE User u SET u.isDeleted = TRUE WHERE u.id = :id")
                 .setParameter("id", id).executeUpdate();
         logger.info("User successfully removed");
     }
@@ -70,7 +70,7 @@ public class UserDAOImpl extends BaseDAOImpl<User> implements BaseDAO<User>, Use
     @Transactional(readOnly = true)
     public User getById(String id) {
         Session session =this.sessionFactory.getCurrentSession();
-        return (User)session.createQuery("FROM User u WHERE u.id = :id AND u.isDeleted = FALSE")
+        return (User)session.createQuery("FROM User u WHERE u.id = :id AND u.isDeleted = FALSE ")
                 .setParameter("id", id).uniqueResult();
     }
 }

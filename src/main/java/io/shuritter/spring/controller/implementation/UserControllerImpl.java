@@ -2,7 +2,10 @@ package io.shuritter.spring.controller.implementation;
 
 import io.shuritter.spring.controller.BaseController;
 import io.shuritter.spring.controller.UserController;
+import io.shuritter.spring.model.response.Response;
+import io.shuritter.spring.model.response.ResponseMany;
 import io.shuritter.spring.model.User;
+import io.shuritter.spring.model.response.ResponseOne;
 import io.shuritter.spring.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.inject.Inject;
 import java.util.List;
 
+import static io.shuritter.spring.model.response.Status.SUCCESS;
+
 @RestController
 public class UserControllerImpl extends BaseControllerImpl<User> implements BaseController<User>, UserController {
     private static final Logger logger = LoggerFactory.getLogger(UserControllerImpl.class);
@@ -26,6 +31,18 @@ public class UserControllerImpl extends BaseControllerImpl<User> implements Base
         this.service = service;
     }
 
+    @GetMapping(value="/api/v1/users", produces = "application/json")
+    public ResponseEntity<Response> getAll() {
+        List<User> users = this.service.getAll();
+        ResponseMany<User> response = new ResponseMany<>();
+        response.setTotal(users.size());
+        response.setLimit(response.getTotal());
+        response.setSkip(0);
+        response.setData(users);
+        response.setStatus(SUCCESS);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     @PostMapping(value = "/users", consumes = "application/json")
     public ResponseEntity<User> add(@RequestBody User user) {
         service.add(user);
@@ -33,32 +50,19 @@ public class UserControllerImpl extends BaseControllerImpl<User> implements Base
         return new ResponseEntity<>(new HttpHeaders(), HttpStatus.CREATED);
     }
 
-    @GetMapping(value = "/users", produces = "application/json")
-    public ResponseEntity<List<User>> getAll() {
-        List<User> users = this.service.getAll();
-        if (users.size() == 0) {
-            logger.error("No users");
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        logger.info(this.service.getAll().toString());
-        return new ResponseEntity<>(users, HttpStatus.OK);
-    }
-
     @GetMapping(value = "/users/{id}", produces = "application/json")
-    public ResponseEntity<User> getById(@PathVariable("id") String id) {
-        User user = service.getById(id);
-        if (checkDeleted(id) || checkEmpty(id)) {
-            logger.info("User with " + id + " id not found");
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        logger.info("User with " + id + " id: " + user);
-        return new ResponseEntity<>(service.getById(id), HttpStatus.OK);
+    public ResponseEntity<Response> getById(@PathVariable("id") String id) {
+        ResponseOne<User> response = new ResponseOne<>();
+        response.setData(service.getById(id));
+        response.setStatus(SUCCESS);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 
     @DeleteMapping(value = "/users/{id}", consumes = "application/json")
     public ResponseEntity<User> delete(@PathVariable("id") String id) {
-        if (checkEmpty(id) || checkDeleted(id)) {
+        if (deleted(id)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         service.delete(id);
@@ -68,7 +72,7 @@ public class UserControllerImpl extends BaseControllerImpl<User> implements Base
 
     @PutMapping(value = "/users/{id}", consumes = "application/json")
     public ResponseEntity<User> update(@PathVariable("id") String id, @RequestBody User user) {
-        if (checkDeleted(id) || checkEmpty(id)) {
+        if (deleted(id)) {
             return new ResponseEntity<>(new HttpHeaders(), HttpStatus.NOT_FOUND);
         }
         service.update(user, id);
@@ -76,11 +80,7 @@ public class UserControllerImpl extends BaseControllerImpl<User> implements Base
         return new ResponseEntity<>(new HttpHeaders(), HttpStatus.OK);
     }
 
-    public Boolean checkEmpty(String userId) {
-        return service.getById(userId) == null;
-    }
-
-    public Boolean checkDeleted(String userId) {
+    public Boolean deleted(String userId) {
         return service.getById(userId).isDeleted();
     }
 

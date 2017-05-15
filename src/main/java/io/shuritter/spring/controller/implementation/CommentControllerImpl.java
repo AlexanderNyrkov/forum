@@ -5,6 +5,7 @@ import io.shuritter.spring.controller.CommentController;
 import io.shuritter.spring.model.Comment;
 import io.shuritter.spring.model.Post;
 import io.shuritter.spring.model.User;
+import io.shuritter.spring.model.response.Response;
 import io.shuritter.spring.service.CommentService;
 import io.shuritter.spring.service.PostService;
 import io.shuritter.spring.service.UserService;
@@ -60,24 +61,25 @@ public class CommentControllerImpl extends BaseControllerImpl<Comment> implement
         if (userService.getById(userId) == null || postService.getById(postId) == null) {
             return new ResponseEntity<>(NOT_FOUND);
         }
-        List<Comment> comments = service.getAll(postId);
+        List<Comment> comments = service.getAll(postService.getById(postId));
         return new ResponseEntity<>(comments, OK);
     }
 
     @GetMapping(value = "/users/{userId}/posts/{postId}/comments/{id}", produces = "application/json")
     public ResponseEntity<Comment> getById(@PathVariable("userId") String userId, @PathVariable("postId") String postId,
                                            @PathVariable("id") String id) {
-        if (userService.getById(userId) == null || postService.getById(postId) == null) {
-            return new ResponseEntity<>(NOT_FOUND);
+        if (empty(userId, postId, id) || deleted(userId, postId, id)) {
+            return new ResponseEntity<>(new HttpHeaders(), NOT_FOUND);
         }
         return new ResponseEntity<>(service.getById(id), OK);
 
     }
 
     @PutMapping(value = "/users/{userId}/posts/{postId}/comments/{id}", consumes = "application/json")
-    public ResponseEntity<Comment> update(@PathVariable("userId") String userId, @PathVariable("postId") String postId, @PathVariable("id") String id, @RequestBody Comment comment) {
-        if (userService.getById(userId) == null || postService.getById(postId) == null) {
-            return new ResponseEntity<>(NOT_FOUND);
+    public ResponseEntity<Comment> update(@PathVariable("userId") String userId, @PathVariable("postId") String postId, @PathVariable("id") String id,
+                                          @RequestBody Comment comment) {
+        if (empty(userId, postId, id) || deleted(userId, postId, id)) {
+            return new ResponseEntity<>(new HttpHeaders(), NOT_FOUND);
         }
         service.update(userService.getById(userId), postService.getById(postId), comment, id);//test fff
         logger.info("Comment updated");
@@ -88,7 +90,7 @@ public class CommentControllerImpl extends BaseControllerImpl<Comment> implement
     public ResponseEntity<Comment> delete(@PathVariable("userId") String userId, @PathVariable("postId") String postId,
                                           @PathVariable("id") String id, @RequestBody Comment comment) {
 
-        if (userService.getById(userId) == null || postService.getById(postId) == null) {
+        if (empty(userId, postId, id) || deleted(userId, postId, id)) {
             return new ResponseEntity<>(new HttpHeaders(), NOT_FOUND);
         }
         service.delete(id, comment);
@@ -96,8 +98,22 @@ public class CommentControllerImpl extends BaseControllerImpl<Comment> implement
         return new ResponseEntity<>(new HttpHeaders(), OK);
     }
 
+    public Boolean empty(String userId, String postId, String id) {
+        return userService.getById(userId) == null || postService.getById(postId) == null || service.getById(id) == null;
+    }
+
+
+
+    public Boolean deleted(String userId, String postId, String id) {
+        return userService.getById(userId).isDeleted() || postService.getById(postId).isDeleted() || service.getById(id).isDeleted();
+    }
+
+
+
+
+
     @Override
-    public ResponseEntity<List<Comment>> getAll() {
+    public ResponseEntity<Response> getAll() {
         return null;
     }
 
@@ -117,7 +133,7 @@ public class CommentControllerImpl extends BaseControllerImpl<Comment> implement
     }
 
     @Override
-    public ResponseEntity<Comment> getById(String id) {
+    public ResponseEntity<Response> getById(String id) {
         return null;
     }
 
