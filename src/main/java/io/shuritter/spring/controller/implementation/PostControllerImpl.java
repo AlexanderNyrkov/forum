@@ -68,7 +68,7 @@ public class PostControllerImpl extends BaseControllerImpl<Post> implements Base
     @GetMapping(value = "/api/v1/users/{userId}/posts/{id}", produces = "application/json")
     public ResponseEntity<Response> getById(@PathVariable("userId") String userId, @PathVariable("id") String id) {
         ResponseOne<Post> response = new ResponseOne<>();
-        if (service.getById(id).isDeleted()) {
+        if (service.getById(id) == null) {
             response.setStatus(ERROR);
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
