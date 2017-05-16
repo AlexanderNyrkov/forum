@@ -80,7 +80,7 @@ public class CommentControllerImpl extends BaseControllerImpl<Comment> implement
     public ResponseEntity<Response> getById(@PathVariable("userId") String userId, @PathVariable("postId") String postId,
                                             @PathVariable("id") String id) {
         ResponseOne<Comment> response = new ResponseOne<>();
-        if (service.getById(id).isDeleted()) {
+        if (service.getById(id) == null) {
             response.setStatus(ERROR);
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
