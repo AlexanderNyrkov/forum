@@ -15,9 +15,6 @@
     </properties>
 
     <dependencies>
-
-
-
         <!-- Spring -->
         <dependency>
             <groupId>org.springframework</groupId>
@@ -42,11 +39,6 @@
             <version>${org.springframework-version}</version>
             <type>jar</type>
             <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-            <version>2.9.7</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
