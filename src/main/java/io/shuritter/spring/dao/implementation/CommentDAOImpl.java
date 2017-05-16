@@ -43,7 +43,7 @@ public class CommentDAOImpl extends BaseDAOImpl<Comment> implements BaseDAO<Comm
         Session session = this.sessionFactory.getCurrentSession();
         List<Comment> comments = session.createQuery("FROM Comment c WHERE c.post = :postId AND c.isDeleted = FALSE")
                 .setParameter("postId", postId).list();
-        return  comments;
+        return comments;
     }
 
     @Override
