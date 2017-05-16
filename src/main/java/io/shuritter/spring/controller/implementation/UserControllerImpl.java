@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.inject.Inject;
 import java.util.List;
 
+import static io.shuritter.spring.model.response.Status.ERROR;
 import static io.shuritter.spring.model.response.Status.SUCCESS;
 
 @RestController
@@ -29,6 +30,10 @@ public class UserControllerImpl extends BaseControllerImpl<User> implements Base
     @Qualifier("userService")
     public void setService(UserService service) {
         this.service = service;
+    }
+
+    public Boolean deleted(String userId) {
+        return service.getById(userId).isDeleted();
     }
 
     @GetMapping(value="/api/v1/users", produces = "application/json")
@@ -43,24 +48,26 @@ public class UserControllerImpl extends BaseControllerImpl<User> implements Base
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/users", consumes = "application/json")
+    @PostMapping(value = "/api/v1/users", consumes = "application/json")
     public ResponseEntity<User> add(@RequestBody User user) {
         service.add(user);
         logger.info("User added");
         return new ResponseEntity<>(new HttpHeaders(), HttpStatus.CREATED);
     }
 
-    @GetMapping(value = "/users/{id}", produces = "application/json")
+    @GetMapping(value = "/api/v1/users/{id}", produces = "application/json")
     public ResponseEntity<Response> getById(@PathVariable("id") String id) {
         ResponseOne<User> response = new ResponseOne<>();
+        if (service.getById(id) == null) {
+            response.setStatus(ERROR);
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
         response.setData(service.getById(id));
         response.setStatus(SUCCESS);
-
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-
-    @DeleteMapping(value = "/users/{id}", consumes = "application/json")
+    @DeleteMapping(value = "/api/v1/users/{id}", consumes = "application/json")
     public ResponseEntity<User> delete(@PathVariable("id") String id) {
         if (deleted(id)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -70,7 +77,7 @@ public class UserControllerImpl extends BaseControllerImpl<User> implements Base
         return new ResponseEntity<>(new HttpHeaders(), HttpStatus.OK);
     }
 
-    @PutMapping(value = "/users/{id}", consumes = "application/json")
+    @PutMapping(value = "/api/v1/users/{id}", consumes = "application/json")
     public ResponseEntity<User> update(@PathVariable("id") String id, @RequestBody User user) {
         if (deleted(id)) {
             return new ResponseEntity<>(new HttpHeaders(), HttpStatus.NOT_FOUND);
@@ -79,10 +86,5 @@ public class UserControllerImpl extends BaseControllerImpl<User> implements Base
         logger.info("User updated");
         return new ResponseEntity<>(new HttpHeaders(), HttpStatus.OK);
     }
-
-    public Boolean deleted(String userId) {
-        return service.getById(userId).isDeleted();
-    }
-
 }
 
