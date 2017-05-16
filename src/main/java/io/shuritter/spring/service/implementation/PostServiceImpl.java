@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Named;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Named("postService")
@@ -63,7 +62,7 @@ public class PostServiceImpl extends BaseServiceImpl<Post> implements BaseServic
     @Override
     @Transactional(readOnly = true)
     public List<Post> userPosts(String userId) {
-        return this.DAO.userPosts(userId);
+        return this.DAO.getAll(userId);
     }
 
     @Override

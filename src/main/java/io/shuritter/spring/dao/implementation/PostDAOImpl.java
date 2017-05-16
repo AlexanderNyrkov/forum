@@ -19,15 +19,15 @@ public class PostDAOImpl extends BaseDAOImpl<Post> implements BaseDAO<Post>, Pos
 
     private SessionFactory sessionFactory;
 
-    @Inject
-    public void setSessionFactory(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
-
     public PostDAOImpl() {
     }
 
     public PostDAOImpl(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
+    }
+
+    @Inject
+    public void setSessionFactory(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
 
@@ -55,7 +55,7 @@ public class PostDAOImpl extends BaseDAOImpl<Post> implements BaseDAO<Post>, Pos
     }
 
     @Override
-    public List<Post> userPosts(String userId) {
+    public List<Post> getAll(String userId) {
         Session session = this.sessionFactory.getCurrentSession();
         return session.createQuery("FROM Post p WHERE p.user.id = :id").setParameter("id", userId).list();
     }

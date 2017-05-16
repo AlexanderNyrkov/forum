@@ -4,5 +4,5 @@ import io.shuritter.spring.model.Post;
 import java.util.List;
 
 public interface PostDAO extends BaseDAO<Post> {
-    List userPosts(String userId);
+    List getAll(String userId);
 }

@@ -16,7 +16,6 @@ import java.util.List;
 @Repository("userDAO")
 public class UserDAOImpl extends BaseDAOImpl<User> implements BaseDAO<User>, UserDAO {
     private static final Logger logger = LoggerFactory.getLogger(UserDAOImpl.class);
-
     private SessionFactory sessionFactory;
 
     @Inject
@@ -69,8 +68,8 @@ public class UserDAOImpl extends BaseDAOImpl<User> implements BaseDAO<User>, Use
     @Override
     @Transactional(readOnly = true)
     public User getById(String id) {
-        Session session =this.sessionFactory.getCurrentSession();
-        return (User)session.createQuery("FROM User u WHERE u.id = :id AND u.isDeleted = FALSE ")
+        Session session = this.sessionFactory.getCurrentSession();
+        return (User) session.createQuery("FROM User u WHERE u.id = :id AND u.isDeleted = FALSE ")
                 .setParameter("id", id).uniqueResult();
     }
 }

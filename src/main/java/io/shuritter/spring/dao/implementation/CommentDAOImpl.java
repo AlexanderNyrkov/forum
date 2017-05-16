@@ -19,15 +19,15 @@ public class CommentDAOImpl extends BaseDAOImpl<Comment> implements BaseDAO<Comm
 
     private SessionFactory sessionFactory;
 
-    @Inject
-    public void setSessionFactory(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
-
     public CommentDAOImpl() {
     }
 
     public CommentDAOImpl(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
+    }
+
+    @Inject
+    public void setSessionFactory(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
 

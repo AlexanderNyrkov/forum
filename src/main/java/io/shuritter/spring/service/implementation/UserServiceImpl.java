@@ -51,7 +51,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements BaseServic
     }
 
     @Override
-    public void update(User user,String id)  {
+    public void update(User user, String id) {
         user.setId(id);
         this.DAO.update(user);
     }
@@ -60,5 +60,4 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements BaseServic
     public void delete(String id) {
         this.DAO.delete(id);
     }
-
 }
