@@ -5,7 +5,6 @@ import io.shuritter.spring.model.Post;
 
 import java.util.List;
 
-
 public interface CommentDAO extends BaseDAO<Comment> {
-    List<Comment> getAll(Post postId);
+    List<Comment> getAll(Post postId, Boolean showDeleted);
 }

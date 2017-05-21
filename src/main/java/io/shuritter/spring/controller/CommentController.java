@@ -4,8 +4,6 @@ import io.shuritter.spring.model.Comment;
 import io.shuritter.spring.model.response.Response;
 import org.springframework.http.ResponseEntity;
 
-import java.util.List;
-
 public interface CommentController extends BaseController<Comment> {
     ResponseEntity<Response> getAll(String userId, String postId);
     ResponseEntity<Comment> add(String userId, String postId, Comment comment);

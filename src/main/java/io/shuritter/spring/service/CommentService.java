@@ -8,8 +8,6 @@ import java.util.List;
 
 
 public interface CommentService extends BaseService<Comment> {
-    List<Comment> getAll(Post postId);
-    void add(User user, Post post, Comment comment);
-    void update(User user, Post post, Comment comment, String id);
-    void delete(String id, Comment comment);
+    List<Comment> getAll(Post postId, Boolean showDeleted);
+    void add(Comment comment, User user, Post post);
 }
