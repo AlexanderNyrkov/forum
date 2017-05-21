@@ -1,17 +1,13 @@
 package io.shuritter.spring.model.response;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@AllArgsConstructor
 public enum  Status {
     SUCCESS("SUCCESS"),
     ERROR("ERROR");
 
-    private final String name;
-
-    Status(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
-
+    @Getter
+    private final String label;
 }
