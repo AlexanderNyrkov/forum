@@ -4,18 +4,13 @@ import io.shuritter.spring.dao.UserDAO;
 import io.shuritter.spring.model.User;
 import io.shuritter.spring.service.BaseService;
 import io.shuritter.spring.service.UserService;
-import org.hibernate.annotations.NotFound;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.crossstore.ChangeSetPersister;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Named("userService")
 @Transactional
@@ -34,14 +29,9 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements BaseServic
     }
 
     @Override
-    public void update(User entity) {
-        this.DAO.update(entity);
-    }
-
-    @Override
     @Transactional(readOnly = true)
-    public List<User> getAll() {
-        return this.DAO.getAll();
+    public List<User> getAll(Boolean showDeleted) {
+        return this.DAO.getAll(showDeleted);
     }
 
     @Override
@@ -51,8 +41,13 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements BaseServic
     }
 
     @Override
-    public void update(User user, String id) {
-        user.setId(id);
+    public void update(String id, User updated) {
+        User user = this.DAO.getById(id);
+        user.setLogin(updated.getLogin());
+        user.setName(updated.getName());
+        user.setPassword(updated.getPassword());
+        user.setEmail(updated.getEmail());
+        user.setUpdatedAt(DateTime.now());
         this.DAO.update(user);
     }
 

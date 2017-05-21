@@ -5,6 +5,7 @@ import io.shuritter.spring.model.Post;
 import io.shuritter.spring.model.User;
 import io.shuritter.spring.service.BaseService;
 import io.shuritter.spring.service.PostService;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,40 +18,26 @@ import java.util.List;
 public class PostServiceImpl extends BaseServiceImpl<Post> implements BaseService<Post>, PostService {
     private PostDAO DAO;
 
+    public PostServiceImpl(PostDAO DAO) {
+        this.DAO = DAO;
+    }
+
     @Autowired
     @Qualifier("postDao")
     public void setDAO(PostDAO DAO) {
         this.DAO = DAO;
     }
 
-    public PostServiceImpl(PostDAO DAO) {
-        this.DAO = DAO;
-    }
-
     @Override
     public void add(Post post, User user) {
-        post.setUser(user);
+        post.setUserId(user);
         this.DAO.add(post);
     }
 
     @Override
-    public void update(Post post, String id, String userId) {
-        User user = new User();
-        post.setId(id);
-        user.setId(userId);
-        post.setUser(user);
-        this.DAO.update(post);
-    }
-
-    @Override
     @Transactional(readOnly = true)
-    public List<Post> getAll() {
-        return this.DAO.getAll();
-    }
-
-    @Override
-    public void add(Post entity) {
-
+    public List<Post> getAll(Boolean showDeleted) {
+        return this.DAO.getAll(showDeleted);
     }
 
     @Override
@@ -60,13 +47,10 @@ public class PostServiceImpl extends BaseServiceImpl<Post> implements BaseServic
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public List<Post> userPosts(String userId) {
-        return this.DAO.getAll(userId);
-    }
-
-    @Override
-    public void update(Post post) {
+    public void update(String id, Post updated) {
+        Post post = this.DAO.getById(id);
+        post.setText(updated.getText());
+        post.setUpdatedAt(DateTime.now());
         this.DAO.update(post);
     }
 

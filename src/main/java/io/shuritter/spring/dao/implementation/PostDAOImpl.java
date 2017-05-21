@@ -14,20 +14,19 @@ import javax.inject.Inject;
 import java.util.List;
 
 @Repository("postDao")
+@Transactional
 public class PostDAOImpl extends BaseDAOImpl<Post> implements BaseDAO<Post>, PostDAO {
     private static final Logger logger = LoggerFactory.getLogger(PostDAOImpl.class);
 
-    private SessionFactory sessionFactory;
+    @Inject
+    public void setSessionFactory(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
+    }
 
     public PostDAOImpl() {
     }
 
     public PostDAOImpl(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
-
-    @Inject
-    public void setSessionFactory(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
 
@@ -39,25 +38,25 @@ public class PostDAOImpl extends BaseDAOImpl<Post> implements BaseDAO<Post>, Pos
     }
 
     @Override
-    public Post getById(String id) {
-        Session session = this.sessionFactory.getCurrentSession();
-        logger.info("Post successfully loaded");
-        return (Post) session.createQuery("FROM Post p WHERE p.id = :id")
-                .setParameter("id", id).uniqueResult();
-    }
-
-    @Override
     @Transactional(readOnly = true)
-    public List<Post> getAll() {
+    public List<Post> getAll(Boolean showDeleted) {
         Session session = this.sessionFactory.getCurrentSession();
-        List<Post> posts = session.createQuery("FROM Post p WHERE p.isDeleted = FALSE ").list();
+        List<Post> posts;
+        if (!showDeleted) {
+            posts = session.createQuery("FROM Post p WHERE p.isDeleted = FALSE", Post.class).list();
+        } else {
+            posts = session.createQuery("FROM Post", Post.class).list();
+        }
         return posts;
     }
 
     @Override
-    public List<Post> getAll(String userId) {
+    @Transactional(readOnly = true)
+    public Post getById(String id) {
         Session session = this.sessionFactory.getCurrentSession();
-        return session.createQuery("FROM Post p WHERE p.user.id = :id").setParameter("id", userId).list();
+        logger.info("Post successfully loaded");
+        return session.createQuery("FROM Post p WHERE p.id = :id AND p.isDeleted = FALSE", Post.class)
+                .setParameter("id", id).uniqueResult();
     }
 
     @Override
@@ -71,7 +70,7 @@ public class PostDAOImpl extends BaseDAOImpl<Post> implements BaseDAO<Post>, Pos
     public void delete(String id) {
         Session session = this.sessionFactory.getCurrentSession();
         session.createQuery("UPDATE Post p SET p.isDeleted = TRUE " +
-                "WHERE p.id = :id").setParameter("id", id).executeUpdate();
+                "WHERE p.id = :id AND p.isDeleted = FALSE").setParameter("id", id).executeUpdate();
         logger.info("Post successfully removed");
 
     }

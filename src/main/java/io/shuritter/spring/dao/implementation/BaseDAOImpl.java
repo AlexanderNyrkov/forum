@@ -2,6 +2,8 @@ package io.shuritter.spring.dao.implementation;
 
 import io.shuritter.spring.dao.BaseDAO;
 import io.shuritter.spring.model.BaseEntity;
+import org.hibernate.SessionFactory;
 
-public abstract class BaseDAOImpl<T extends BaseEntity> implements BaseDAO<T> {
+abstract class BaseDAOImpl<T extends BaseEntity> implements BaseDAO<T> {
+    protected SessionFactory sessionFactory;
 }

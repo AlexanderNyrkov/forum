@@ -24,6 +24,7 @@ import static io.shuritter.spring.model.response.Status.SUCCESS;
 import static org.springframework.http.HttpStatus.*;
 
 @RestController
+@RequestMapping("/api/v1/")
 public class PostControllerImpl extends BaseControllerImpl<Post> implements BaseController<Post>, PostController {
     private static final Logger logger = LoggerFactory.getLogger(PostControllerImpl.class);
     private PostService service;
@@ -41,9 +42,24 @@ public class PostControllerImpl extends BaseControllerImpl<Post> implements Base
         this.userService = userService;
     }
 
-    @GetMapping(value = "/api/v1/posts", produces = "application/json")
+
+    private Boolean isNull(String userId, String postId) {
+        return userService.getById(userId) == null || service.getById(postId) == null;
+    }
+
+    @PostMapping(value = "users/{id}/posts", consumes = "application/json")
+    public ResponseEntity<Post> add(@PathVariable("id") String id, @RequestBody Post post) {
+        if (userService.getById(id) == null) {
+            return new ResponseEntity<>(NOT_FOUND);
+        }
+        service.add(post, userService.getById(id));
+        logger.info("Post added");
+        return new ResponseEntity<>(new HttpHeaders(), CREATED);
+    }
+
+    @GetMapping(value = "posts", produces = "application/json")
     public ResponseEntity<Response> getAll() {
-        List<Post> posts = this.service.getAll();
+        List<Post> posts = this.service.getAll(false);
         ResponseMany<Post> response = new ResponseMany<>();
         response.setTotal(posts.size());
         response.setLimit(response.getTotal());
@@ -53,22 +69,10 @@ public class PostControllerImpl extends BaseControllerImpl<Post> implements Base
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/api/v1/users/{id}/posts", produces = "application/json")
-    public ResponseEntity<Response> getAll(@PathVariable("id") String id) {
-        List<Post> posts = this.service.userPosts(id);
-        ResponseMany<Post> response = new ResponseMany<>();
-        response.setTotal(posts.size());
-        response.setLimit(response.getTotal());
-        response.setSkip(0);
-        response.setData(posts);
-        response.setStatus(SUCCESS);
-        return new ResponseEntity<>(response, OK);
-    }
-
-    @GetMapping(value = "/api/v1/users/{userId}/posts/{id}", produces = "application/json")
+    @GetMapping(value = "users/{userId}/posts/{id}", produces = "application/json")
     public ResponseEntity<Response> getById(@PathVariable("userId") String userId, @PathVariable("id") String id) {
         ResponseOne<Post> response = new ResponseOne<>();
-        if (service.getById(id) == null) {
+        if (isNull(userId,id)) {
             response.setStatus(ERROR);
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
@@ -77,59 +81,24 @@ public class PostControllerImpl extends BaseControllerImpl<Post> implements Base
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/api/v1/users/{id}/posts", consumes = "application/json")
-    public ResponseEntity<Post> add(@PathVariable("id") String id, @RequestBody Post post) {
-        if (userService.getById(id) == null || userService.getById(id).isDeleted()) {
-            return new ResponseEntity<>(NOT_FOUND);
-        }
-        service.add(post, userService.getById(id));
-        logger.info("Post added");
-        return new ResponseEntity<>(new HttpHeaders(), CREATED);
-    }
-
-    @PutMapping(value = "/api/v1/users/{userId}/posts/{id}", consumes = "application/json")
+    @PutMapping(value = "users/{userId}/posts/{id}", consumes = "application/json")
     public ResponseEntity<Post> update(@PathVariable("userId") String userId, @PathVariable("id") String id, @RequestBody Post post) {
-        if (deleted(userId, id)) {
+        if (isNull(userId, id)) {
             return new ResponseEntity<>(NOT_FOUND);
         }
-        service.update(post, id, userId);
+        service.update(id, post);
         logger.info("Post updated");
         return new ResponseEntity<>(new HttpHeaders(), OK);
     }
 
-    @DeleteMapping(value = "/api/v1/users/{userId}/posts/{id}", consumes = "application/json")
+    @DeleteMapping(value = "users/{userId}/posts/{id}", consumes = "application/json")
     public ResponseEntity<Post> delete(@PathVariable("userId") String userId, @PathVariable("id") String id) {
-        if (deleted(userId, id)) {
+        if (isNull(userId, id)) {
             return new ResponseEntity<>(NOT_FOUND);
         }
         service.delete(id);
         logger.info("Post with");
         return new ResponseEntity<>(new HttpHeaders(), OK);
-    }
-
-
-    public Boolean deleted(String userId, String postId) {
-        return userService.getById(userId).isDeleted() || service.getById(postId).isDeleted();
-    }
-
-    @Override
-    public ResponseEntity<Post> add(Post entity) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Post> update(String id, Post entity) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Post> delete(String id) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Response> getById(String id) {
-        return null;
     }
 }
 

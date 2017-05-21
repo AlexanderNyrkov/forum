@@ -14,9 +14,9 @@ import javax.inject.Inject;
 import java.util.List;
 
 @Repository("userDAO")
+@Transactional
 public class UserDAOImpl extends BaseDAOImpl<User> implements BaseDAO<User>, UserDAO {
     private static final Logger logger = LoggerFactory.getLogger(UserDAOImpl.class);
-    private SessionFactory sessionFactory;
 
     @Inject
     public void setSessionFactory(SessionFactory sessionFactory) {
@@ -31,17 +31,6 @@ public class UserDAOImpl extends BaseDAOImpl<User> implements BaseDAO<User>, Use
     }
 
     @Override
-    @Transactional(readOnly = true)
-    @SuppressWarnings("unchecked")
-    public List<User> getAll() {
-        Session session = this.sessionFactory.getCurrentSession();
-        List<User> users = session.createQuery("FROM User u WHERE u.isDeleted = FALSE").list();
-        logger.info("User getAll: " + users.toString());
-        return users;
-    }
-
-    @Override
-    @Transactional
     public void add(User user) {
         Session session = this.sessionFactory.getCurrentSession();
         session.saveOrUpdate(user);
@@ -49,7 +38,29 @@ public class UserDAOImpl extends BaseDAOImpl<User> implements BaseDAO<User>, Use
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
+    public List<User> getAll(Boolean showDeleted) {
+        Session session = this.sessionFactory.getCurrentSession();
+        List<User> users;
+        if (!showDeleted) {
+            users = session.createQuery("FROM User u WHERE u.isDeleted = FALSE", User.class).list();
+        } else {
+            users = session.createQuery("FROM User", User.class).list();
+        }
+
+        logger.info("User getAll: " + users.toString());
+        return users;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public User getById(String id) {
+        Session session = this.sessionFactory.getCurrentSession();
+        return session.createQuery("FROM User u WHERE u.id = :id AND u.isDeleted = FALSE", User.class)
+                .setParameter("id", id).uniqueResult();
+    }
+
+    @Override
     public void update(User user) {
         Session session = this.sessionFactory.getCurrentSession();
         session.update(user);
@@ -57,19 +68,11 @@ public class UserDAOImpl extends BaseDAOImpl<User> implements BaseDAO<User>, Use
     }
 
     @Override
-    @Transactional
     public void delete(String id) {
         Session session = this.sessionFactory.getCurrentSession();
-        session.createQuery("UPDATE User u SET u.isDeleted = TRUE WHERE u.id = :id")
+        session.createQuery("UPDATE User u SET u.isDeleted = TRUE WHERE u.id = :id " +
+                "AND u.isDeleted = FALSE")
                 .setParameter("id", id).executeUpdate();
         logger.info("User successfully removed");
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public User getById(String id) {
-        Session session = this.sessionFactory.getCurrentSession();
-        return (User) session.createQuery("FROM User u WHERE u.id = :id AND u.isDeleted = FALSE ")
-                .setParameter("id", id).uniqueResult();
     }
 }
