@@ -19,10 +19,13 @@ import java.io.Serializable;
 import static javax.persistence.GenerationType.IDENTITY;
 import static org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME;
 
+/**
+ * Superclass for entities
+ * @author Alexander Nyrkov
+ */
 @MappedSuperclass
 @EqualsAndHashCode
 public abstract class BaseEntity implements Serializable {
-    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -52,6 +55,9 @@ public abstract class BaseEntity implements Serializable {
     @Getter @Setter
     protected Boolean isDeleted;
 
+    /**
+     * Default constructor
+     */
     public BaseEntity() {
         this.createdAt = DateTime.now();
         this.updatedAt = DateTime.now();

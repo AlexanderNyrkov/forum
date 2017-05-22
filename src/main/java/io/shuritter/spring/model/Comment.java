@@ -1,16 +1,23 @@
 package io.shuritter.spring.model;
 
-import com.fasterxml.jackson.annotation.*;
-import lombok.*;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
-import java.io.Serializable;
 
+/**
+ * Comment entity class
+ * Extends of {@link BaseEntity}
+ * @author Alexander Nyrkov
+ */
 @Entity
 @Table(name = "COMMENT", schema = "PUBLIC")
 @ToString(callSuper = true, exclude = {"userId","postId"})
 @EqualsAndHashCode(callSuper = true)
-public class Comment extends BaseEntity implements Serializable{
+public class Comment extends BaseEntity {
 
     @JsonBackReference(value = "2")
     @ManyToOne(fetch = FetchType.EAGER)
@@ -33,6 +40,10 @@ public class Comment extends BaseEntity implements Serializable{
     @Getter @Setter
     private Post postId;
 
+    /**
+     * Default constructor
+     * @see BaseEntity
+     */
     public Comment() {
         super();
         this.like = 0L;

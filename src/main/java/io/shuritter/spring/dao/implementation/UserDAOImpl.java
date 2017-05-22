@@ -1,6 +1,5 @@
 package io.shuritter.spring.dao.implementation;
 
-import io.shuritter.spring.dao.BaseDAO;
 import io.shuritter.spring.dao.UserDAO;
 import io.shuritter.spring.model.User;
 import org.hibernate.Session;
@@ -13,9 +12,15 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.inject.Inject;
 import java.util.List;
 
+/**
+ * DAO class for User entity
+ * Extends of {@link BaseDAOImpl}
+ * Implementation of {@link UserDAO}
+ * @author Alexander Nyrkov
+ */
 @Repository("userDAO")
 @Transactional
-public class UserDAOImpl extends BaseDAOImpl<User> implements BaseDAO<User>, UserDAO {
+public class UserDAOImpl extends BaseDAOImpl<User> implements UserDAO {
     private static final Logger logger = LoggerFactory.getLogger(UserDAOImpl.class);
 
     @Inject
@@ -30,6 +35,10 @@ public class UserDAOImpl extends BaseDAOImpl<User> implements BaseDAO<User>, Use
         this.sessionFactory = sessionFactory;
     }
 
+    /**
+     * Added new user in database
+     * @param user The user to be added
+     */
     @Override
     public void add(User user) {
         Session session = this.sessionFactory.getCurrentSession();
@@ -37,6 +46,11 @@ public class UserDAOImpl extends BaseDAOImpl<User> implements BaseDAO<User>, Use
         logger.info("User added");
     }
 
+    /**
+     * Get all users who are in the database
+     * @param showDeleted Show all if true, and all who not deleted if false
+     * @return The list users
+     */
     @Override
     @Transactional(readOnly = true)
     public List<User> getAll(Boolean showDeleted) {
@@ -52,6 +66,11 @@ public class UserDAOImpl extends BaseDAOImpl<User> implements BaseDAO<User>, Use
         return users;
     }
 
+    /**
+     * Get the user with the required id
+     * @param id The id for find user
+     * @return User with the required id
+     */
     @Override
     @Transactional(readOnly = true)
     public User getById(String id) {
@@ -60,6 +79,10 @@ public class UserDAOImpl extends BaseDAOImpl<User> implements BaseDAO<User>, Use
                 .setParameter("id", id).uniqueResult();
     }
 
+    /**
+     * Update user login, name, password, email
+     * @param user The user to update
+     */
     @Override
     public void update(User user) {
         Session session = this.sessionFactory.getCurrentSession();
@@ -67,6 +90,10 @@ public class UserDAOImpl extends BaseDAOImpl<User> implements BaseDAO<User>, Use
         logger.info("User updated");
     }
 
+    /**
+     * Makes a logical deletion of the user
+     * @param id The id of the user you want to delete
+     */
     @Override
     public void delete(String id) {
         Session session = this.sessionFactory.getCurrentSession();

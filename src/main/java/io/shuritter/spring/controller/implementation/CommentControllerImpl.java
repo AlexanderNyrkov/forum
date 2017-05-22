@@ -1,6 +1,5 @@
 package io.shuritter.spring.controller.implementation;
 
-import io.shuritter.spring.controller.BaseController;
 import io.shuritter.spring.controller.CommentController;
 import io.shuritter.spring.model.Comment;
 import io.shuritter.spring.model.response.Response;
@@ -23,9 +22,15 @@ import static io.shuritter.spring.model.response.Status.ERROR;
 import static io.shuritter.spring.model.response.Status.SUCCESS;
 import static org.springframework.http.HttpStatus.*;
 
+/**
+ * Controller for comment requests
+ * Extends of {@link BaseControllerImpl}
+ * Implementation of {@link CommentController}
+ * @author Alexander Nyrkov
+ */
 @RestController
 @RequestMapping("/api/v1/")
-public class CommentControllerImpl extends BaseControllerImpl<Comment> implements BaseController<Comment>, CommentController {
+public class CommentControllerImpl extends BaseControllerImpl<Comment> implements CommentController {
     private static final Logger logger = LoggerFactory.getLogger(CommentControllerImpl.class);
     private CommentService service;
     private UserService userService;
@@ -46,10 +51,26 @@ public class CommentControllerImpl extends BaseControllerImpl<Comment> implement
         this.postService = postService;
     }
 
+    /**
+     * Checks the identifier for existence
+     * @param userId The user id
+     * @param postId The post Id
+     * @param id The comment id
+     * @return true if the identifier exists and false if there is no
+     */
     private Boolean isNull(String userId, String postId, String id) {
         return userService.getById(userId) == null || postService.getById(postId) == null || service.getById(id) == null;
     }
 
+    /**
+     * Insert data the Comment table
+     * You must send a request in the JSON format
+     * @param userId Comment author id
+     * @param postId Post id to which the comment was written
+     * @param comment New post
+     * @return HTTP Status 201(CREATED) if comment is created
+     * and HTTP Status 404(NOT FOUND) if user/post id deleted or not exist
+     */
     @PostMapping(value = "users/{userId}/posts/{postId}/comments", consumes = "application/json")
     public ResponseEntity<Comment> add(@PathVariable("userId") String userId, @PathVariable("postId") String postId,
                                        @RequestBody Comment comment) {
@@ -61,18 +82,11 @@ public class CommentControllerImpl extends BaseControllerImpl<Comment> implement
         return new ResponseEntity<>(new HttpHeaders(), CREATED);
     }
 
-    @GetMapping(value = "users/{userId}/posts/{postId}/comments", produces = "application/json")
-    public ResponseEntity<Response> getAll(@PathVariable("userId") String userId, @PathVariable("postId") String postId) {
-        List<Comment> comments = service.getAll(postService.getById(postId), false);
-        ResponseMany<Comment> response = new ResponseMany<>();
-        response.setTotal(comments.size());
-        response.setLimit(response.getTotal());
-        response.setSkip(0);
-        response.setData(comments);
-        response.setStatus(SUCCESS);
-        return new ResponseEntity<>(response, OK);
-    }
-
+    /**
+     * Get in the JSON format all comment from Comment table
+     * @return Response with total comments, limit, skip, data, status SUCCESS and HTTP Status 200(OK)
+     * if no request errors
+     */
     @GetMapping(value = "comments", produces = "application/json")
     @Override
     public ResponseEntity<Response> getAll() {
@@ -86,6 +100,12 @@ public class CommentControllerImpl extends BaseControllerImpl<Comment> implement
         return new ResponseEntity<>(response, OK);
     }
 
+    /**
+     * Get in the JSON format comment with wanted id from Comment table
+     * @param id The id for find comment
+     * @return Response with comment data, status SUCCESS and HTTP Status 200(OK) if comment will successfully find
+     * and status ERROR with HTTP Status 404(NOT FOUND) if user/post/comment is deleted or id not found
+     */
     @GetMapping(value = "users/{userId}/posts/{postId}/comments/{id}", produces = "application/json")
     public ResponseEntity<Response> getById(@PathVariable("userId") String userId, @PathVariable("postId") String postId,
                                             @PathVariable("id") String id) {
@@ -99,6 +119,16 @@ public class CommentControllerImpl extends BaseControllerImpl<Comment> implement
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    /**
+     * Updates comment data in a table
+     * You must send a request in the JSON format
+     * @param userId Comment author id
+     * @param postId Post id to which the comment was written
+     * @param id The comment id
+     * @param comment The comment to update
+     * @return HTTP Status 200(OK) if comment is successfully updated
+     * and HTTP Status 404(NOT FOUND) if user/post/comment is already deleted or id not found
+     */
     @PutMapping(value = "users/{userId}/posts/{postId}/comments/{id}", consumes = "application/json")
     public ResponseEntity<Comment> update(@PathVariable("userId") String userId, @PathVariable("postId") String postId, @PathVariable("id") String id,
                                           @RequestBody Comment comment) {
@@ -110,9 +140,17 @@ public class CommentControllerImpl extends BaseControllerImpl<Comment> implement
         return new ResponseEntity<>(new HttpHeaders(), OK);
     }
 
+    /**
+     * Logically delete the comment in the table
+     * @param userId Comment author id
+     * @param postId Post id to which the comment was written
+     * @param id The id of the comment you want to delete
+     * @return HTTP Status 200(OK) if comment is successfully deleted
+     * and HTTP Status 404(NOT FOUND) if user/post/comment is already deleted or id not found
+     */
     @DeleteMapping(value = "users/{userId}/posts/{postId}/comments/{id}", consumes = "application/json")
     public ResponseEntity<Comment> delete(@PathVariable("userId") String userId, @PathVariable("postId") String postId,
-                                          @PathVariable("id") String id, @RequestBody Comment comment) {
+                                          @PathVariable("id") String id) {
         if (isNull(userId, postId, id)) {
             return new ResponseEntity<>(new HttpHeaders(), NOT_FOUND);
         }

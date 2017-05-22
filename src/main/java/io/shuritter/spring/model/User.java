@@ -1,21 +1,30 @@
 package io.shuritter.spring.model;
 
-import com.fasterxml.jackson.annotation.*;
-import lombok.*;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
-import javax.persistence.*;
-import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import java.util.List;
 
 import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.FetchType.EAGER;
 
+/**
+ * User entity class
+ * Extends of {@link BaseEntity}
+ * @author Alexander Nyrkov
+ */
 @Entity
 @Table(name = "USER", schema = "public")
 @ToString(callSuper = true, exclude = {"posts","comments"})
 @EqualsAndHashCode(callSuper = true)
-public class User extends BaseEntity implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class User extends BaseEntity {
 
     @Column(name = "NAME")
     @Getter @Setter
@@ -48,6 +57,10 @@ public class User extends BaseEntity implements Serializable {
     @Setter @Getter
     private List<Comment> comments;
 
+    /**
+     * Default constructor
+     * @see BaseEntity
+     */
     public User() {
         super();
     }

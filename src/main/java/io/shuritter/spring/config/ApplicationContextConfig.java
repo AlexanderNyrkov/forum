@@ -10,23 +10,19 @@ import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBuilder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 import javax.sql.DataSource;
 import java.util.Properties;
 
+/**
+ * Configuration class
+ * @author Alexander Nyrkov
+ */
 @Configuration
 @EnableWebMvc
 @ComponentScan("io.shuritter.spring")
 @EnableTransactionManagement
 public class ApplicationContextConfig {
-    @Bean(name = "viewResolver")
-    public InternalResourceViewResolver getViewResolver() {
-        InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
-        viewResolver.setPrefix("/WEB-INF/views/");
-        viewResolver.setSuffix(".jsp");
-        return viewResolver;
-    }
 
     @Bean(name = "dataSource")
     public DataSource getDataSource() {

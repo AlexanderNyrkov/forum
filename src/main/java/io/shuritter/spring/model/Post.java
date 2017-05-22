@@ -2,21 +2,26 @@ package io.shuritter.spring.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
-import java.io.Serializable;
-import java.text.ParseException;
 import java.util.List;
 
-import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.FetchType.EAGER;
 
+/**
+ * Post entity class
+ * Extends of {@link BaseEntity}
+ * @author Alexander Nyrkov
+ */
 @Entity
 @Table(name = "POST", schema = "public")
 @ToString(callSuper = true, exclude = {"userId","comments"})
 @EqualsAndHashCode(callSuper = true)
-public class Post extends BaseEntity implements Serializable{
+public class Post extends BaseEntity {
 
     @Column(name = "LIKE_COUNT")
     @Getter @Setter
@@ -37,7 +42,11 @@ public class Post extends BaseEntity implements Serializable{
     @Setter @Getter
     private List<Comment> comments;
 
-    public Post() throws ParseException {
+    /**
+     * Default constructor
+     * @see BaseEntity
+     */
+    public Post() {
         super();
         this.like = 0L;
     }

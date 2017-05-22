@@ -4,7 +4,12 @@ import io.shuritter.spring.model.BaseEntity;
 import lombok.*;
 
 import java.util.List;
-
+/**
+ * Class for a many response
+ * @param <T> Describes list of any entity class
+ * Extends of {@link Response}
+ * @author Alexander Nyrkov
+ */
 @ToString
 @EqualsAndHashCode(callSuper = true)
 public class ResponseMany <T extends BaseEntity> extends Response {
@@ -21,6 +26,10 @@ public class ResponseMany <T extends BaseEntity> extends Response {
     @Setter @Getter
     private List<T> data;
 
+    /**
+     * Default constructor
+     * @see Response
+     */
     public ResponseMany() {
         super();
     }

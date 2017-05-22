@@ -6,6 +6,11 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
+/**
+ * Interface whose methods are to be implemented in Controller classes
+ * @param <T> Describes any entity class
+ * @author Alexander Nyrkov
+ */
 public interface BaseController<T extends BaseEntity> {
     ResponseEntity<Response> getAll();
 }
