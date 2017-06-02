@@ -46,6 +46,11 @@ public class User extends BaseEntity {
     private String email;
 
 
+    @Column(name = "IS_ADMIN")
+    @Getter @Setter
+    private Boolean isAdmin;
+
+
     @JsonManagedReference(value = "1")
     @OneToMany(fetch = EAGER, mappedBy= "userId", cascade = ALL)
     @Setter @Getter
@@ -63,14 +68,16 @@ public class User extends BaseEntity {
      */
     public User() {
         super();
+        this.isAdmin = false;
     }
 
-    public User(String name, String login, String password, String email, List<Post> posts, List<Comment> comments) {
+    public User(String name, String login, String password, String email, Boolean isAdmin, List<Post> posts, List<Comment> comments) {
         super();
         this.name = name;
         this.login = login;
         this.password = password;
         this.email = email;
+        this.isAdmin = isAdmin;
         this.posts = posts;
         this.comments = comments;
     }
