@@ -4,6 +4,7 @@ import io.shuritter.spring.model.BaseEntity;
 import io.shuritter.spring.model.response.Response;
 import org.springframework.http.ResponseEntity;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -12,5 +13,5 @@ import java.util.List;
  * @author Alexander Nyrkov
  */
 public interface BaseController<T extends BaseEntity> {
-    ResponseEntity<Response> getAll();
+    ResponseEntity<Response> getAll(HttpServletRequest request);
 }
