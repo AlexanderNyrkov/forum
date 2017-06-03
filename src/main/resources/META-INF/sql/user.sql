@@ -9,7 +9,8 @@ create table "user"
   email text not null,
   created_at timestamp default now() not null,
   is_deleted boolean default false not null,
-  updated_at timestamp default now() not null
+  updated_at timestamp default now() not null,
+  is_admin boolean default false not null
 )
 ;
 
