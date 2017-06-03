@@ -10,15 +10,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 import static io.shuritter.spring.model.response.Status.ERROR;
 import static io.shuritter.spring.model.response.Status.SUCCESS;
+import static org.springframework.http.HttpStatus.*;
 
 /**
  * Controller for user requests
@@ -38,6 +39,7 @@ public class UserControllerImpl extends BaseControllerImpl<User> implements User
         this.service = service;
     }
 
+
     /**
      * Insert data the User table
      * You must send a request in the JSON format
@@ -48,7 +50,7 @@ public class UserControllerImpl extends BaseControllerImpl<User> implements User
     public ResponseEntity<User> add(@RequestBody User user) {
         service.add(user);
         logger.info("User added");
-        return new ResponseEntity<>(new HttpHeaders(), HttpStatus.CREATED);
+        return new ResponseEntity<>(new HttpHeaders(), CREATED);
     }
 
     /**
@@ -57,15 +59,27 @@ public class UserControllerImpl extends BaseControllerImpl<User> implements User
      * if no request errors
      */
     @GetMapping(value="users", produces = "application/json")
-    public ResponseEntity<Response> getAll() {
+    public ResponseEntity<Response> getAll(HttpServletRequest request) {
+        if (authorization(request)) {
+            return new ResponseEntity<>(new HttpHeaders(), UNAUTHORIZED);
+        }
+
         List<User> users = this.service.getAll(false);
-        ResponseMany<User> response = new ResponseMany<>();
-        response.setTotal(users.size());
-        response.setLimit(response.getTotal());
-        response.setSkip(0);
-        response.setData(users);
-        response.setStatus(SUCCESS);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+
+        for (int i = 0; i < users.size(); i++) {
+            if (loginPassword(request, users.get(i)) || !users.get(i).getIsAdmin()) {
+                continue;
+            }
+            ResponseMany<User> response = new ResponseMany<>();
+            response.setTotal(users.size());
+            response.setLimit(response.getTotal());
+            response.setSkip(0);
+            response.setData(users);
+            response.setStatus(SUCCESS);
+            return new ResponseEntity<>(response, new HttpHeaders(), OK);
+        }
+
+        return new ResponseEntity<>(new HttpHeaders(), FORBIDDEN);
     }
 
     /**
@@ -75,15 +89,25 @@ public class UserControllerImpl extends BaseControllerImpl<User> implements User
      * and status ERROR with HTTP Status 404(NOT FOUND) if user is deleted or id not found
      */
     @GetMapping(value = "users/{id}", produces = "application/json")
-    public ResponseEntity<Response> getById(@PathVariable("id") String id) {
+    public ResponseEntity<Response> getById(@PathVariable("id") String id, HttpServletRequest request) {
+
         ResponseOne<User> response = new ResponseOne<>();
         if (service.getById(id) == null) {
             response.setStatus(ERROR);
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(response, NOT_FOUND);
         }
+
+        if (authorization(request)) {
+            return new ResponseEntity<>(new HttpHeaders(), UNAUTHORIZED);
+        }
+
+        if (loginPassword(request, service.getById(id))) {
+            return new ResponseEntity<>(new HttpHeaders(), UNAUTHORIZED);
+        }
+
         response.setData(service.getById(id));
         response.setStatus(SUCCESS);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(response, OK);
     }
 
     /**
@@ -93,13 +117,23 @@ public class UserControllerImpl extends BaseControllerImpl<User> implements User
      * and HTTP Status 404(NOT FOUND) if user is already deleted or id not found
      */
     @DeleteMapping(value = "users/{id}", consumes = "application/json")
-    public ResponseEntity<User> delete(@PathVariable("id") String id) {
+    public ResponseEntity<User> delete(@PathVariable("id") String id, HttpServletRequest request) {
+
         if (service.getById(id) == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new HttpHeaders(), NOT_FOUND);
         }
+
+        if (authorization(request)) {
+            return new ResponseEntity<>(new HttpHeaders(), UNAUTHORIZED);
+        }
+
+        if (loginPassword(request, service.getById(id))) {
+            return new ResponseEntity<>(new HttpHeaders(), UNAUTHORIZED);
+        }
+
         service.delete(id);
         logger.info("User removed");
-        return new ResponseEntity<>(new HttpHeaders(), HttpStatus.OK);
+        return new ResponseEntity<>(new HttpHeaders(), OK);
     }
 
     /**
@@ -111,13 +145,22 @@ public class UserControllerImpl extends BaseControllerImpl<User> implements User
      * and HTTP Status 404(NOT FOUND) if user is already deleted or id not found
      */
     @PutMapping(value = "users/{id}", consumes = "application/json")
-    public ResponseEntity<User> update(@PathVariable("id") String id, @RequestBody User user) {
+    public ResponseEntity<User> update(@PathVariable("id") String id, @RequestBody User user, HttpServletRequest request) {
         if (service.getById(id) == null) {
-            return new ResponseEntity<>(new HttpHeaders(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new HttpHeaders(), NOT_FOUND);
         }
+
+        if (authorization(request)) {
+            return new ResponseEntity<>(UNAUTHORIZED);
+        }
+
+        if (loginPassword(request, service.getById(id))) {
+            return new ResponseEntity<>(new HttpHeaders(), UNAUTHORIZED);
+        }
+
         service.update(id, user);
         logger.info("User updated");
-        return new ResponseEntity<>(new HttpHeaders(), HttpStatus.OK);
+        return new ResponseEntity<>(new HttpHeaders(), OK);
     }
 }
 
