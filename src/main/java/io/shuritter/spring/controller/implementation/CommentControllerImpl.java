@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 import static io.shuritter.spring.model.response.Status.ERROR;
@@ -59,7 +60,8 @@ public class CommentControllerImpl extends BaseControllerImpl<Comment> implement
      * @return true if the identifier exists and false if there is no
      */
     private Boolean isNull(String userId, String postId, String id) {
-        return userService.getById(userId) == null || postService.getById(postId) == null || service.getById(id) == null;
+        return userService.getById(userId) == null || postService.getById(postId) == null
+                || service.getById(id) == null;
     }
 
     /**
@@ -73,10 +75,19 @@ public class CommentControllerImpl extends BaseControllerImpl<Comment> implement
      */
     @PostMapping(value = "users/{userId}/posts/{postId}/comments", consumes = "application/json")
     public ResponseEntity<Comment> add(@PathVariable("userId") String userId, @PathVariable("postId") String postId,
-                                       @RequestBody Comment comment) {
+                                       @RequestBody Comment comment, HttpServletRequest request) {
         if (userService.getById(userId) == null || postService.getById(postId) == null) {
-            return new ResponseEntity<>(NOT_FOUND);
+            return new ResponseEntity<>(new HttpHeaders(), NOT_FOUND);
         }
+
+        if (authorization(request)) {
+            return new ResponseEntity<>(new HttpHeaders(), UNAUTHORIZED);
+        }
+
+        if (loginPassword(request, userService.getById(userId))) {
+            return new ResponseEntity<>(new HttpHeaders(), UNAUTHORIZED);
+        }
+
         service.add(comment, userService.getById(userId), postService.getById(postId));
         logger.info("Comment added");
         return new ResponseEntity<>(new HttpHeaders(), CREATED);
@@ -89,7 +100,7 @@ public class CommentControllerImpl extends BaseControllerImpl<Comment> implement
      */
     @GetMapping(value = "comments", produces = "application/json")
     @Override
-    public ResponseEntity<Response> getAll() {
+    public ResponseEntity<Response> getAll(HttpServletRequest request) {
         List<Comment> comments = service.getAll(false);
         ResponseMany<Comment> response = new ResponseMany<>();
         response.setTotal(comments.size());
@@ -108,12 +119,21 @@ public class CommentControllerImpl extends BaseControllerImpl<Comment> implement
      */
     @GetMapping(value = "users/{userId}/posts/{postId}/comments/{id}", produces = "application/json")
     public ResponseEntity<Response> getById(@PathVariable("userId") String userId, @PathVariable("postId") String postId,
-                                            @PathVariable("id") String id) {
+                                            @PathVariable("id") String id, HttpServletRequest request) {
         ResponseOne<Comment> response = new ResponseOne<>();
         if (isNull(userId,postId,id)) {
             response.setStatus(ERROR);
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
+
+        if (authorization(request)) {
+            return new ResponseEntity<>(new HttpHeaders(), UNAUTHORIZED);
+        }
+
+        if (loginPassword(request, userService.getById(userId))) {
+            return new ResponseEntity<>(new HttpHeaders(), UNAUTHORIZED);
+        }
+
         response.setData(service.getById(id));
         response.setStatus(SUCCESS);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -131,11 +151,20 @@ public class CommentControllerImpl extends BaseControllerImpl<Comment> implement
      */
     @PutMapping(value = "users/{userId}/posts/{postId}/comments/{id}", consumes = "application/json")
     public ResponseEntity<Comment> update(@PathVariable("userId") String userId, @PathVariable("postId") String postId, @PathVariable("id") String id,
-                                          @RequestBody Comment comment) {
+                                          @RequestBody Comment comment, HttpServletRequest request) {
         if (isNull(userId, postId, id)) {
             return new ResponseEntity<>(new HttpHeaders(), NOT_FOUND);
         }
-        service.update(id, comment);//test fff
+
+        if (authorization(request)) {
+            return new ResponseEntity<>(new HttpHeaders(), UNAUTHORIZED);
+        }
+
+        if (loginPassword(request, userService.getById(userId))) {
+            return new ResponseEntity<>(new HttpHeaders(), UNAUTHORIZED);
+        }
+
+        service.update(id, comment);
         logger.info("Comment updated");
         return new ResponseEntity<>(new HttpHeaders(), OK);
     }
@@ -150,9 +179,17 @@ public class CommentControllerImpl extends BaseControllerImpl<Comment> implement
      */
     @DeleteMapping(value = "users/{userId}/posts/{postId}/comments/{id}", consumes = "application/json")
     public ResponseEntity<Comment> delete(@PathVariable("userId") String userId, @PathVariable("postId") String postId,
-                                          @PathVariable("id") String id) {
+                                          @PathVariable("id") String id, HttpServletRequest request) {
         if (isNull(userId, postId, id)) {
             return new ResponseEntity<>(new HttpHeaders(), NOT_FOUND);
+        }
+
+        if (authorization(request)) {
+            return new ResponseEntity<>(new HttpHeaders(), UNAUTHORIZED);
+        }
+
+        if (loginPassword(request, userService.getById(userId))) {
+            return new ResponseEntity<>(new HttpHeaders(), UNAUTHORIZED);
         }
         service.delete(id);
         return new ResponseEntity<>(new HttpHeaders(), OK);
