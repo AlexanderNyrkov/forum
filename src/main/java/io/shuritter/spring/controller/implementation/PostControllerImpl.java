@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 import static io.shuritter.spring.model.response.Status.ERROR;
@@ -54,7 +55,7 @@ public class PostControllerImpl extends BaseControllerImpl<Post> implements Post
      * @return true if the identifier exists and false if there is no
      */
     private Boolean isNull(String userId, String id) {
-        return userService.getById(userId) == null || service.getById(id) == null || service.getById(id).getUserId() != userService.getById(userId);
+        return userService.getById(userId) == null || service.getById(id) == null;
     }
 
     /**
@@ -66,10 +67,20 @@ public class PostControllerImpl extends BaseControllerImpl<Post> implements Post
      * and HTTP Status 404(NOT FOUND) if user id deleted or not exist
      */
     @PostMapping(value = "users/{id}/posts", consumes = "application/json")
-    public ResponseEntity<Post> add(@PathVariable("id") String id, @RequestBody Post post) {
+    public ResponseEntity<Post> add(@PathVariable("id") String id, @RequestBody Post post, HttpServletRequest request) {
+
         if (userService.getById(id) == null) {
-            return new ResponseEntity<>(NOT_FOUND);
+            return new ResponseEntity<>(new HttpHeaders(), HttpStatus.NOT_FOUND);
         }
+
+        if (authorization(request)) {
+            return new ResponseEntity<>(new HttpHeaders(), UNAUTHORIZED);
+        }
+
+        if (loginPassword(request, userService.getById(id))) {
+            return new ResponseEntity<>(new HttpHeaders(), UNAUTHORIZED);
+        }
+
         service.add(post, userService.getById(id));
         logger.info("Post added");
         return new ResponseEntity<>(new HttpHeaders(), CREATED);
@@ -81,7 +92,7 @@ public class PostControllerImpl extends BaseControllerImpl<Post> implements Post
      * if no request errors
      */
     @GetMapping(value = "posts", produces = "application/json")
-    public ResponseEntity<Response> getAll() {
+    public ResponseEntity<Response> getAll(HttpServletRequest request) {
         List<Post> posts = this.service.getAll(false);
         ResponseMany<Post> response = new ResponseMany<>();
         response.setTotal(posts.size());
@@ -99,12 +110,21 @@ public class PostControllerImpl extends BaseControllerImpl<Post> implements Post
      * and status ERROR with HTTP Status 404(NOT FOUND) if user/post is deleted or id not found
      */
     @GetMapping(value = "users/{userId}/posts/{id}", produces = "application/json")
-    public ResponseEntity<Response> getById(@PathVariable("userId") String userId, @PathVariable("id") String id) {
+    public ResponseEntity<Response> getById(@PathVariable("userId") String userId, @PathVariable("id") String id, HttpServletRequest request) {
         ResponseOne<Post> response = new ResponseOne<>();
         if (isNull(userId,id)) {
             response.setStatus(ERROR);
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
+
+        if (authorization(request)) {
+            return new ResponseEntity<>(new HttpHeaders(), UNAUTHORIZED);
+        }
+
+        if (loginPassword(request, userService.getById(userId))) {
+            return new ResponseEntity<>(new HttpHeaders(), UNAUTHORIZED);
+        }
+
         response.setData(service.getById(id));
         response.setStatus(SUCCESS);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -120,10 +140,19 @@ public class PostControllerImpl extends BaseControllerImpl<Post> implements Post
      * and HTTP Status 404(NOT FOUND) if user/post is already deleted or id not found
      */
     @PutMapping(value = "users/{userId}/posts/{id}", consumes = "application/json")
-    public ResponseEntity<Post> update(@PathVariable("userId") String userId, @PathVariable("id") String id, @RequestBody Post post) {
+    public ResponseEntity<Post> update(@PathVariable("userId") String userId, @PathVariable("id") String id, @RequestBody Post post, HttpServletRequest request) {
         if (isNull(userId, id)) {
-            return new ResponseEntity<>(NOT_FOUND);
+            return new ResponseEntity<>(new HttpHeaders(), NOT_FOUND);
         }
+
+        if (authorization(request)) {
+            return new ResponseEntity<>(new HttpHeaders(), UNAUTHORIZED);
+        }
+
+        if (loginPassword(request, userService.getById(userId))) {
+            return new ResponseEntity<>(new HttpHeaders(), UNAUTHORIZED);
+        }
+
         service.update(id, post);
         logger.info("Post updated");
         return new ResponseEntity<>(new HttpHeaders(), OK);
@@ -137,10 +166,19 @@ public class PostControllerImpl extends BaseControllerImpl<Post> implements Post
      * and HTTP Status 404(NOT FOUND) if user/post is already deleted or id not found
      */
     @DeleteMapping(value = "users/{userId}/posts/{id}", consumes = "application/json")
-    public ResponseEntity<Post> delete(@PathVariable("userId") String userId, @PathVariable("id") String id) {
+    public ResponseEntity<Post> delete(@PathVariable("userId") String userId, @PathVariable("id") String id, HttpServletRequest request) {
         if (isNull(userId, id)) {
             return new ResponseEntity<>(NOT_FOUND);
         }
+
+        if (authorization(request)) {
+            return new ResponseEntity<>(new HttpHeaders(), UNAUTHORIZED);
+        }
+
+        if (loginPassword(request, userService.getById(userId))) {
+            return new ResponseEntity<>(new HttpHeaders(), UNAUTHORIZED);
+        }
+
         service.delete(id);
         logger.info("Post with");
         return new ResponseEntity<>(new HttpHeaders(), OK);
