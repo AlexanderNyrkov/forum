@@ -5,6 +5,7 @@ import io.shuritter.spring.model.User;
 import io.shuritter.spring.service.UserService;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
@@ -34,6 +35,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
      */
     @Override
     public void add(User user) {
+        user.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()));
         this.DAO.add(user);
     }
 
@@ -69,7 +71,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
         User user = this.DAO.getById(id);
         user.setLogin(updated.getLogin());
         user.setName(updated.getName());
-        user.setPassword(updated.getPassword());
+        user.setPassword(BCrypt.hashpw(updated.getPassword(), BCrypt.gensalt()));
         user.setEmail(updated.getEmail());
         user.setUpdatedAt(DateTime.now());
         this.DAO.update(user);
