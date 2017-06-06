@@ -17,7 +17,7 @@ import static javax.persistence.FetchType.EAGER;
 
 /**
  * User entity class
- * Extends of {@link BaseEntity}
+ * Extends {@link BaseEntity}
  * @author Alexander Nyrkov
  */
 @Entity

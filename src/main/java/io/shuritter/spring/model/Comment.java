@@ -10,7 +10,7 @@ import javax.persistence.*;
 
 /**
  * Comment entity class
- * Extends of {@link BaseEntity}
+ * Extends {@link BaseEntity}
  * @author Alexander Nyrkov
  */
 @Entity

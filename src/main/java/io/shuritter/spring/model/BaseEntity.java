@@ -20,7 +20,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 import static org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME;
 
 /**
- * Superclass for entities
+ * Base class that describes domain entity
  * @author Alexander Nyrkov
  */
 @MappedSuperclass

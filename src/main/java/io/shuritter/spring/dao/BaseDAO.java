@@ -5,8 +5,8 @@ import io.shuritter.spring.model.BaseEntity;
 import java.util.List;
 
 /**
- * Interface whose methods are to be implemented in DAO classes
- * @param <T> Describes any entity class
+ * Interface with basic DAO methods
+ * @param <T> the type of entities
  * @author Alexander Nyrkov
  */
 public interface BaseDAO<T extends BaseEntity> {

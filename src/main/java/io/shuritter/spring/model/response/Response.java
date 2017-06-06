@@ -5,7 +5,7 @@ import lombok.*;
 import java.io.Serializable;
 
 /**
- * Abstract base class for responses
+ * Abstract base class that describes response data
  * @author Alexander Nyrkov
  */
 @ToString

@@ -7,8 +7,8 @@ import org.springframework.http.ResponseEntity;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * Interface whose methods are to be implemented in PostControllerImpl class
- * Extends of {@link BaseController}
+ * Interface that contains methods to control PostControllerImpl class
+ * Extends {@link BaseController}
  * @author Alexander Nyrkov
  */
 public interface PostController extends BaseController<Post> {

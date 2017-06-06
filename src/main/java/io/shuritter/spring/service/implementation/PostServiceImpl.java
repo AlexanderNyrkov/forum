@@ -13,9 +13,9 @@ import javax.inject.Named;
 import java.util.List;
 
 /**
- * Service class for UserDAO
- * Extends of {@link BaseServiceImpl}
- * Implementation of {@link PostService}
+ * Service class for post DAO
+ * Extends {@link BaseServiceImpl}
+ * Implements {@link PostService}
  * @author Alexander Nyrkov
  */
 @Named("postService")
@@ -34,9 +34,9 @@ public class PostServiceImpl extends BaseServiceImpl<Post> implements PostServic
     }
 
     /**
-     * Added new post in database
-     * @param post The post to be added
-     * @param user Post author
+     * Create/Add new post
+     * @param post the post to be add
+     * @param user post author
      */
     @Override
     public void add(Post post, User user) {
@@ -45,9 +45,9 @@ public class PostServiceImpl extends BaseServiceImpl<Post> implements PostServic
     }
 
     /**
-     * Get all posts who are in the database
-     * @param showDeleted Show all if true, and all who not deleted if false
-     * @return The list posts
+     * Get all posts
+     * @param showDeleted show all if true, and all who not deleted if false
+     * @return the list posts
      */
     @Override
     @Transactional(readOnly = true)
@@ -56,9 +56,9 @@ public class PostServiceImpl extends BaseServiceImpl<Post> implements PostServic
     }
 
     /**
-     * Get the post with the required id
-     * @param id The id for find post
-     * @return Post with the required id
+     * Get post by ID
+     * @param id identifier of post
+     * @return post with the required id
      */
     @Override
     @Transactional(readOnly = true)
@@ -68,9 +68,9 @@ public class PostServiceImpl extends BaseServiceImpl<Post> implements PostServic
 
 
     /**
-     * Update post text
-     * @param id Post id
-     * @param updated The post to update
+     * Update post
+     * @param id identifier of post
+     * @param updated the post to update
      */
     @Override
     public void update(String id, Post updated) {
@@ -81,8 +81,8 @@ public class PostServiceImpl extends BaseServiceImpl<Post> implements PostServic
     }
 
     /**
-     * Makes a logical deletion of the post
-     * @param id The id of the post you want to delete
+     * Logically delete post
+     * @param id the id of the post you want to delete
      */
     @Override
     public void delete(String id) {

@@ -10,9 +10,9 @@ import java.nio.charset.Charset;
 import java.util.Base64;
 
 /**
- * Abstract base class for Controller classes
- * @param <T> Describes any entity class
- * Implementation of {@link BaseController}
+ * Abstract base class that implements basic controller methods
+ * @param <T> the type of entities
+ * Implements {@link BaseController}
  * @author Alexander Nyrkov
  */
 public abstract class BaseControllerImpl<T extends BaseEntity> implements BaseController<T> {

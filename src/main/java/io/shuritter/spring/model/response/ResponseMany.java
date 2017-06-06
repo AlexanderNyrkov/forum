@@ -6,8 +6,8 @@ import lombok.*;
 import java.util.List;
 /**
  * Class for a many response
- * @param <T> Describes list of any entity class
- * Extends of {@link Response}
+ * @param <T> the type of entities
+ * Extends {@link Response}
  * @author Alexander Nyrkov
  */
 @ToString

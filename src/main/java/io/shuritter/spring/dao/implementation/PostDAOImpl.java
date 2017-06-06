@@ -14,8 +14,8 @@ import java.util.List;
 
 /**
  * DAO class for post entity
- * Extends of {@link BaseDAOImpl}
- * Implementation of {@link PostDAO}
+ * Extends {@link BaseDAOImpl}
+ * Implements {@link PostDAO}
  * @author Alexander Nyrkov
  */
 @Repository("postDao")
@@ -36,8 +36,8 @@ public class PostDAOImpl extends BaseDAOImpl<Post> implements PostDAO {
     }
 
     /**
-     * Added new post in database
-     * @param post The post to be added
+     * Create/Add new post
+     * @param post the post to be add
      */
     @Override
     public void add(Post post) {
@@ -47,9 +47,9 @@ public class PostDAOImpl extends BaseDAOImpl<Post> implements PostDAO {
     }
 
     /**
-     * Get all posts who are in the database
-     * @param showDeleted Show all if true, and all who not deleted if false
-     * @return The list posts
+     * Get all posts
+     * @param showDeleted show all if true, and all who not deleted if false
+     * @return the list posts
      */
     @Override
     @Transactional(readOnly = true)
@@ -65,9 +65,9 @@ public class PostDAOImpl extends BaseDAOImpl<Post> implements PostDAO {
     }
 
     /**
-     * Get the post with the required id
-     * @param id The id for find post
-     * @return Post with the required id
+     * Get post by ID
+     * @param id the id for find post
+     * @return post with the required id
      */
     @Override
     @Transactional(readOnly = true)
@@ -79,8 +79,8 @@ public class PostDAOImpl extends BaseDAOImpl<Post> implements PostDAO {
     }
 
     /**
-     * Update post text
-     * @param post The post to update
+     * Update post
+     * @param post the post to update
      */
     @Override
     public void update(Post post) {
@@ -90,8 +90,8 @@ public class PostDAOImpl extends BaseDAOImpl<Post> implements PostDAO {
     }
 
     /**
-     * Makes a logical deletion of the post
-     * @param id The id of the post you want to delete
+     * Logically delete post
+     * @param id the id of the post you want to delete
      */
     @Override
     public void delete(String id) {

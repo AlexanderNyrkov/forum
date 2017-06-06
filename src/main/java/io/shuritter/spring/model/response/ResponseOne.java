@@ -5,8 +5,8 @@ import lombok.*;
 
 /**
  * Class for a single response
- * @param <T> Describes any entity class
- * Extends of {@link Response}
+ * @param <T> the type of entities
+ * Extends {@link Response}
  * @author Alexander Nyrkov
  */
 @ToString

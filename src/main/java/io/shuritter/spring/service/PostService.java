@@ -4,8 +4,8 @@ import io.shuritter.spring.model.Post;
 import io.shuritter.spring.model.User;
 
 /**
- * Interface whose methods are to be implemented in PostServiceImpl class
- * Extends of {@link BaseService}
+ * Interface that contains methods to control PostServiceImpl class
+ * Extends {@link BaseService}
  * @author Alexander Nyrkov
  */
 public interface PostService extends BaseService<Post> {

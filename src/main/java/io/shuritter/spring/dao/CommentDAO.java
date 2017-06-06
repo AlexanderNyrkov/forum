@@ -6,8 +6,8 @@ import io.shuritter.spring.model.Post;
 import java.util.List;
 
 /**
- * Interface whose methods are to be implemented in CommentDAOImpl class
- * Extends of {@link BaseDAO}
+ * Interface that contains methods to control CommentDAOImpl class
+ * Extends {@link BaseDAO}
  * @author Alexander Nyrkov
  */
 public interface CommentDAO extends BaseDAO<Comment> {

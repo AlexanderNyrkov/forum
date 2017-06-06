@@ -22,9 +22,9 @@ import static io.shuritter.spring.model.response.Status.SUCCESS;
 import static org.springframework.http.HttpStatus.*;
 
 /**
- * Controller for user requests
- * Extends of {@link BaseControllerImpl}
- * Implementation of {@link UserController}
+ * Controller that implements UserController related methods
+ * Extends {@link BaseControllerImpl}
+ * Implements{@link UserController}
  * @author Alexander Nyrkov
  */
 @RestController
@@ -41,9 +41,9 @@ public class UserControllerImpl extends BaseControllerImpl<User> implements User
 
 
     /**
-     * Insert data the User table
-     * You must send a request in the JSON format
-     * @param user New user
+     * Create new user
+     * Request must be in JSON format
+     * @param user new user
      * @return HTTP Status 201(CREATED) if user is created
      */
     @PostMapping(value = "users", consumes = "application/json")
@@ -54,9 +54,8 @@ public class UserControllerImpl extends BaseControllerImpl<User> implements User
     }
 
     /**
-     * Get in the JSON format all users from User table
-     * @return Response with total users, limit, skip, data, status SUCCESS and HTTP Status 200(OK)
-     * if no request errors
+     * Return all existing users
+     * @return HTTP Status 200(OK), pagination data and users list
      */
     @GetMapping(value="users", produces = "application/json")
     public ResponseEntity<Response> getAll(HttpServletRequest request) {
@@ -83,10 +82,9 @@ public class UserControllerImpl extends BaseControllerImpl<User> implements User
     }
 
     /**
-     * Get in the JSON format user with wanted id from User table
-     * @param id The id for find user
-     * @return Response with user data with status SUCCESS and HTTP Status 200(OK) if user will successfully find
-     * and status ERROR with HTTP Status 404(NOT FOUND) if user is deleted or id not found
+     * Return user with specified ID
+     * @param id identifier of requested user
+     * @return HTTP Status 200(OK) and User model or HTTP Status 404(NOT FOUND) if user is deleted or not found
      */
     @GetMapping(value = "users/{id}", produces = "application/json")
     public ResponseEntity<Response> getById(@PathVariable("id") String id, HttpServletRequest request) {
@@ -111,8 +109,8 @@ public class UserControllerImpl extends BaseControllerImpl<User> implements User
     }
 
     /**
-     * Logically delete the user in the table
-     * @param id The id of the user you want to delete
+     * Delete user
+     * @param id identifier of a user to be deleted
      * @return HTTP Status 200(OK) if user is successfully deleted
      * and HTTP Status 404(NOT FOUND) if user is already deleted or id not found
      */
@@ -137,12 +135,12 @@ public class UserControllerImpl extends BaseControllerImpl<User> implements User
     }
 
     /**
-     * Updates user data in a table
-     * You must send a request in the JSON format
-     * @param id The user id
-     * @param user The user to update
+     * Updates user
+     * Request must be in JSON format
+     * @param id identifier of user
+     * @param user user to be updated
      * @return HTTP Status 200(OK) if user is successfully updated
-     * and HTTP Status 404(NOT FOUND) if user is already deleted or id not found
+     * and HTTP Status 404(NOT FOUND) if user is deleted or id not found
      */
     @PutMapping(value = "users/{id}", consumes = "application/json")
     public ResponseEntity<User> update(@PathVariable("id") String id, @RequestBody User user, HttpServletRequest request) {

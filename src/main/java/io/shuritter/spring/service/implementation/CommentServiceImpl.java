@@ -14,9 +14,9 @@ import javax.inject.Named;
 import java.util.List;
 
 /**
- * Service class for CommentDAO
- * Extends of {@link BaseServiceImpl}
- * Implementation of {@link CommentService}
+ * Service class for comment DAO
+ * Extends {@link BaseServiceImpl}
+ * Implements {@link CommentService}
  * @author Alexander Nyrkov
  */
 @Named("commentService")
@@ -36,10 +36,10 @@ public class CommentServiceImpl extends BaseServiceImpl<Comment> implements Comm
     }
 
     /**
-     * Added new post in database
-     * @param comment The comment to be added
-     * @param user Comment author
-     * @param post Post to which the comment was written
+     * Create/Add new comment
+     * @param comment the comment to be add
+     * @param user comment author
+     * @param post post to which the comment was written
      */
     @Override
     public void add(Comment comment, User user, Post post) {
@@ -49,9 +49,9 @@ public class CommentServiceImpl extends BaseServiceImpl<Comment> implements Comm
     }
 
     /**
-     * Get all comments who are in the database
-     * @param showDeleted Show all if true, and all who not deleted if false
-     * @return The list comments
+     * Get all comments
+     * @param showDeleted show all if true, and all who not deleted if false
+     * @return the list comments
      */
     @Override
     @Transactional(readOnly = true)
@@ -60,10 +60,10 @@ public class CommentServiceImpl extends BaseServiceImpl<Comment> implements Comm
     }
 
     /**
-     * Get all comments on the post
-     * @param postId The id post comments to which should be get
-     * @param showDeleted Show all if true, and all who not deleted if false
-     * @return The list comment
+     * Get all post comments
+     * @param postId the id post comments to which should be get
+     * @param showDeleted show all if true, and all who not deleted if false
+     * @return the list comment
      */
     @Override
     @Transactional(readOnly = true)
@@ -72,9 +72,9 @@ public class CommentServiceImpl extends BaseServiceImpl<Comment> implements Comm
     }
 
     /**
-     * Get the comment with the required id
-     * @param id The id for find comment
-     * @return Comment with the required id
+     * Get comment by ID
+     * @param id the id for find comment
+     * @return comment with the required id
      */
     @Override
     @Transactional(readOnly = true)
@@ -83,9 +83,9 @@ public class CommentServiceImpl extends BaseServiceImpl<Comment> implements Comm
     }
 
     /**
-     * Update comment text
-     * @param id Comment id
-     * @param updated The comment to update
+     * Update comment
+     * @param id identifier of comment
+     * @param updated the comment to update
      */
     @Override
     public void update(String id, Comment updated) {
@@ -96,8 +96,8 @@ public class CommentServiceImpl extends BaseServiceImpl<Comment> implements Comm
     }
 
     /**
-     * Makes a logical deletion of the comment
-     * @param id The id of the comment you want to delete
+     * Logically delete comment
+     * @param id the id of the comment you want to delete
      */
     @Override
     public void delete(String id) {

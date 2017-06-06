@@ -24,9 +24,9 @@ import static io.shuritter.spring.model.response.Status.SUCCESS;
 import static org.springframework.http.HttpStatus.*;
 
 /**
- * Controller for comment requests
- * Extends of {@link BaseControllerImpl}
- * Implementation of {@link CommentController}
+ * Controller that implements PostController related methods
+ * Extends {@link BaseControllerImpl}
+ * Implements {@link CommentController}
  * @author Alexander Nyrkov
  */
 @RestController
@@ -53,11 +53,11 @@ public class CommentControllerImpl extends BaseControllerImpl<Comment> implement
     }
 
     /**
-     * Checks the identifier for existence
-     * @param userId The user id
-     * @param postId The post Id
-     * @param id The comment id
-     * @return true if the identifier exists and false if there is no
+     * Checks whether these models are exist or not
+     * @param userId identifier of user
+     * @param postId identifier of post
+     * @param id identifier of comment
+     * @return true if models exist and false if they doesn't
      */
     private Boolean isNull(String userId, String postId, String id) {
         return userService.getById(userId) == null || postService.getById(postId) == null
@@ -65,13 +65,13 @@ public class CommentControllerImpl extends BaseControllerImpl<Comment> implement
     }
 
     /**
-     * Insert data the Comment table
-     * You must send a request in the JSON format
-     * @param userId Comment author id
-     * @param postId Post id to which the comment was written
-     * @param comment New post
+     * Create new comment
+     * Request must be in JSON format
+     * @param userId comment author id
+     * @param postId post id to which the comment was written
+     * @param comment new comment
      * @return HTTP Status 201(CREATED) if comment is created
-     * and HTTP Status 404(NOT FOUND) if user/post id deleted or not exist
+     * and HTTP Status 404(NOT FOUND) if user/post deleted or doesn't exist
      */
     @PostMapping(value = "users/{userId}/posts/{postId}/comments", consumes = "application/json")
     public ResponseEntity<Comment> add(@PathVariable("userId") String userId, @PathVariable("postId") String postId,
@@ -94,9 +94,8 @@ public class CommentControllerImpl extends BaseControllerImpl<Comment> implement
     }
 
     /**
-     * Get in the JSON format all comment from Comment table
-     * @return Response with total comments, limit, skip, data, status SUCCESS and HTTP Status 200(OK)
-     * if no request errors
+     * Return all existing comments
+     * @return HTTP Status 200(OK), pagination data and comments list
      */
     @GetMapping(value = "comments", produces = "application/json")
     @Override
@@ -112,10 +111,9 @@ public class CommentControllerImpl extends BaseControllerImpl<Comment> implement
     }
 
     /**
-     * Get in the JSON format comment with wanted id from Comment table
-     * @param id The id for find comment
-     * @return Response with comment data, status SUCCESS and HTTP Status 200(OK) if comment will successfully find
-     * and status ERROR with HTTP Status 404(NOT FOUND) if user/post/comment is deleted or id not found
+     * Return comment with specified ID
+     * @param id identifier of requested comment
+     * @return HTTP Status 200(OK) and Comment model or HTTP Status 404(NOT FOUND) if user/post/comment is deleted or not found
      */
     @GetMapping(value = "users/{userId}/posts/{postId}/comments/{id}", produces = "application/json")
     public ResponseEntity<Response> getById(@PathVariable("userId") String userId, @PathVariable("postId") String postId,
@@ -140,14 +138,14 @@ public class CommentControllerImpl extends BaseControllerImpl<Comment> implement
     }
 
     /**
-     * Updates comment data in a table
-     * You must send a request in the JSON format
-     * @param userId Comment author id
-     * @param postId Post id to which the comment was written
-     * @param id The comment id
-     * @param comment The comment to update
+     * Updates comment
+     * Request must be in JSON format
+     * @param userId identifier of user
+     * @param postId identifier of post
+     * @param id identifier of comment
+     * @param comment comment to be updated
      * @return HTTP Status 200(OK) if comment is successfully updated
-     * and HTTP Status 404(NOT FOUND) if user/post/comment is already deleted or id not found
+     * and HTTP Status 404(NOT FOUND) if user/post/comment is deleted or id not found
      */
     @PutMapping(value = "users/{userId}/posts/{postId}/comments/{id}", consumes = "application/json")
     public ResponseEntity<Comment> update(@PathVariable("userId") String userId, @PathVariable("postId") String postId, @PathVariable("id") String id,
@@ -170,10 +168,10 @@ public class CommentControllerImpl extends BaseControllerImpl<Comment> implement
     }
 
     /**
-     * Logically delete the comment in the table
-     * @param userId Comment author id
-     * @param postId Post id to which the comment was written
-     * @param id The id of the comment you want to delete
+     * Delete comment
+     * @param userId comment author id
+     * @param postId post id to which the comment was written
+     * @param id identifier of a comment to be deleted
      * @return HTTP Status 200(OK) if comment is successfully deleted
      * and HTTP Status 404(NOT FOUND) if user/post/comment is already deleted or id not found
      */

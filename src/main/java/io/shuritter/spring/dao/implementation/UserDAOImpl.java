@@ -6,6 +6,10 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.crypto.encrypt.Encryptors;
+import org.springframework.security.crypto.encrypt.TextEncryptor;
+import org.springframework.security.crypto.keygen.KeyGenerators;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,8 +18,8 @@ import java.util.List;
 
 /**
  * DAO class for User entity
- * Extends of {@link BaseDAOImpl}
- * Implementation of {@link UserDAO}
+ * Extends {@link BaseDAOImpl}
+ * Implements of {@link UserDAO}
  * @author Alexander Nyrkov
  */
 @Repository("userDAO")
@@ -36,8 +40,8 @@ public class UserDAOImpl extends BaseDAOImpl<User> implements UserDAO {
     }
 
     /**
-     * Added new user in database
-     * @param user The user to be added
+     * Create/Add new user
+     * @param user the user to be add
      */
     @Override
     public void add(User user) {
@@ -47,9 +51,9 @@ public class UserDAOImpl extends BaseDAOImpl<User> implements UserDAO {
     }
 
     /**
-     * Get all users who are in the database
-     * @param showDeleted Show all if true, and all who not deleted if false
-     * @return The list users
+     * Get all users
+     * @param showDeleted show all if true, and all who not deleted if false
+     * @return the list users
      */
     @Override
     @Transactional(readOnly = true)
@@ -67,9 +71,9 @@ public class UserDAOImpl extends BaseDAOImpl<User> implements UserDAO {
     }
 
     /**
-     * Get the user with the required id
-     * @param id The id for find user
-     * @return User with the required id
+     * Get user by ID
+     * @param id the id for find user
+     * @return user with the required id
      */
     @Override
     @Transactional(readOnly = true)
@@ -80,8 +84,8 @@ public class UserDAOImpl extends BaseDAOImpl<User> implements UserDAO {
     }
 
     /**
-     * Update user login, name, password, email
-     * @param user The user to update
+     * Update user
+     * @param user the user to update
      */
     @Override
     public void update(User user) {
@@ -91,8 +95,8 @@ public class UserDAOImpl extends BaseDAOImpl<User> implements UserDAO {
     }
 
     /**
-     * Makes a logical deletion of the user
-     * @param id The id of the user you want to delete
+     * Logically delete user
+     * @param id the id of the user you want to delete
      */
     @Override
     public void delete(String id) {

@@ -7,8 +7,8 @@ import io.shuritter.spring.model.User;
 import java.util.List;
 
 /**
- * Interface whose methods are to be implemented in CommentServiceImpl class
- * Extends of {@link BaseService}
+ * Interface that contains methods to control CommentServiceImpl class
+ * Extends {@link BaseService}
  * @author Alexander Nyrkov
  */
 public interface CommentService extends BaseService<Comment> {

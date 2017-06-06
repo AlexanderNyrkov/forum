@@ -8,8 +8,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
- * Interface whose methods are to be implemented in Controller classes
- * @param <T> Describes any entity class
+ * Interface with basic controller methods
+ * @param <T> the type of entities
  * @author Alexander Nyrkov
  */
 public interface BaseController<T extends BaseEntity> {

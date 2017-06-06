@@ -23,9 +23,9 @@ import static io.shuritter.spring.model.response.Status.ERROR;
 import static io.shuritter.spring.model.response.Status.SUCCESS;
 import static org.springframework.http.HttpStatus.*;
 /**
- * Controller for post requests
- * Extends of {@link BaseControllerImpl}
- * Implementation of {@link PostController}
+ * Controller that implements PostController related methods
+ * Extends {@link BaseControllerImpl}
+ * Implements {@link PostController}
  * @author Alexander Nyrkov
  */
 @RestController
@@ -49,22 +49,22 @@ public class PostControllerImpl extends BaseControllerImpl<Post> implements Post
 
 
     /**
-     * Checks the identifier for existence
-     * @param userId The user id
-     * @param id The post Id
-     * @return true if the identifier exists and false if there is no
+     * Checks whether these models are exist or not
+     * @param userId identifier of user
+     * @param id identifier of post
+     * @return true if models exist and false if they doesn't
      */
     private Boolean isNull(String userId, String id) {
         return userService.getById(userId) == null || service.getById(id) == null;
     }
 
     /**
-     * Insert data the User table
-     * You must send a request in the JSON format
-     * @param id Post author id
-     * @param post New post
+     * Create new post
+     * Request must be in JSON format
+     * @param id post author id
+     * @param post new post
      * @return HTTP Status 201(CREATED) if user is created
-     * and HTTP Status 404(NOT FOUND) if user id deleted or not exist
+     * and HTTP Status 404(NOT FOUND) if user deleted or not exist
      */
     @PostMapping(value = "users/{id}/posts", consumes = "application/json")
     public ResponseEntity<Post> add(@PathVariable("id") String id, @RequestBody Post post, HttpServletRequest request) {
@@ -87,9 +87,8 @@ public class PostControllerImpl extends BaseControllerImpl<Post> implements Post
     }
 
     /**
-     * Get in the JSON format all posts from Post table
-     * @return Response with total posts, limit, skip, data, status SUCCESS and HTTP Status 200(OK)
-     * if no request errors
+     * Return all existing posts
+     * @return HTTP Status 200(OK), pagination data and posts list
      */
     @GetMapping(value = "posts", produces = "application/json")
     public ResponseEntity<Response> getAll(HttpServletRequest request) {
@@ -104,10 +103,9 @@ public class PostControllerImpl extends BaseControllerImpl<Post> implements Post
     }
 
     /**
-     * Get in the JSON format post with wanted id from Post table
-     * @param id The id for find post
-     * @return Response with post data, status SUCCESS and HTTP Status 200(OK) if post will successfully find
-     * and status ERROR with HTTP Status 404(NOT FOUND) if user/post is deleted or id not found
+     * Return post with specified ID
+     * @param id identifier of requested post
+     * @return HTTP Status 200(OK) and Post model or HTTP Status 404(NOT FOUND) if user/post is deleted or not found
      */
     @GetMapping(value = "users/{userId}/posts/{id}", produces = "application/json")
     public ResponseEntity<Response> getById(@PathVariable("userId") String userId, @PathVariable("id") String id, HttpServletRequest request) {
@@ -131,13 +129,13 @@ public class PostControllerImpl extends BaseControllerImpl<Post> implements Post
     }
 
     /**
-     * Updates post data in a table
-     * You must send a request in the JSON format
-     * @param userId The user id
-     * @param id The post id
-     * @param post The post to update
+     * Updates post
+     * Request must be in JSON format
+     * @param userId identifier of user
+     * @param id identifier of post
+     * @param post post to be updated
      * @return HTTP Status 200(OK) if post is successfully updated
-     * and HTTP Status 404(NOT FOUND) if user/post is already deleted or id not found
+     * and HTTP Status 404(NOT FOUND) if user/post is deleted or id not found
      */
     @PutMapping(value = "users/{userId}/posts/{id}", consumes = "application/json")
     public ResponseEntity<Post> update(@PathVariable("userId") String userId, @PathVariable("id") String id, @RequestBody Post post, HttpServletRequest request) {
@@ -159,9 +157,9 @@ public class PostControllerImpl extends BaseControllerImpl<Post> implements Post
     }
 
     /**
-     * Logically delete the post in the table
-     * @param userId Post author id
-     * @param id The id of the post you want to delete
+     * Delete post
+     * @param userId post author id
+     * @param id identifier of a post to be deleted
      * @return HTTP Status 200(OK) if post is successfully deleted
      * and HTTP Status 404(NOT FOUND) if user/post is already deleted or id not found
      */

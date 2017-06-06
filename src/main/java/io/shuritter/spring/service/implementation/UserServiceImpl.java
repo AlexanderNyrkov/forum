@@ -13,9 +13,9 @@ import javax.inject.Named;
 import java.util.List;
 
 /**
- * Service class for UserDAO
- * Extends of {@link BaseServiceImpl}
- * Implementation of {@link UserService}
+ * Service class for user DAO
+ * Extends {@link BaseServiceImpl}
+ * Implements {@link UserService}
  * @author Alexander Nyrkov
  */
 @Named("userService")
@@ -30,8 +30,8 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
     }
 
     /**
-     * Added new user in database
-     * @param user The user to be added
+     * Create/Add new user
+     * @param user the user to be add
      */
     @Override
     public void add(User user) {
@@ -40,9 +40,9 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
     }
 
     /**
-     * Get all users who are in the database
-     * @param showDeleted Show all if true, and all who not deleted if false
-     * @return The list users
+     * Get all users
+     * @param showDeleted show all if true, and all who not deleted if false
+     * @return the list users
      */
     @Override
     @Transactional(readOnly = true)
@@ -51,9 +51,9 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
     }
 
     /**
-     * Get the user with the required id
-     * @param id The id for find user
-     * @return User with the required id
+     * Get user by ID
+     * @param id the id for find user
+     * @return user with the required id
      */
     @Override
     @Transactional(readOnly = true)
@@ -62,9 +62,9 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
     }
 
     /**
-     * Update user login, name, password, email
-     * @param id The user id
-     * @param updated The user to update
+     * Update user
+     * @param id identifier of user
+     * @param updated the user to update
      */
     @Override
     public void update(String id, User updated) {
@@ -78,8 +78,8 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
     }
 
     /**
-     * Makes a logical deletion of the user
-     * @param id The id of the user you want to delete
+     * Logically delete user
+     * @param id the id of the user you want to delete
      */
     @Override
     public void delete(String id) {

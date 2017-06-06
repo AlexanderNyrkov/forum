@@ -15,8 +15,8 @@ import java.util.List;
 
 /**
  * DAO class for comment entity
- * Extends of {@link BaseDAOImpl}
- * Implementation of {@link CommentDAO}
+ * Extends {@link BaseDAOImpl}
+ * Implements {@link CommentDAO}
  * @author Alexander Nyrkov
  */
 @Repository("commentDao")
@@ -37,8 +37,8 @@ public class CommentDAOImpl extends BaseDAOImpl<Comment> implements CommentDAO {
     }
 
     /**
-     * Added new comment in database
-     * @param comment The comment to be added
+     * Create/Add new comment
+     * @param comment the comment to be add
      */
     @Override
     public void add(Comment comment) {
@@ -48,10 +48,10 @@ public class CommentDAOImpl extends BaseDAOImpl<Comment> implements CommentDAO {
     }
 
     /**
-     * Get all comments on the post
-     * @param postId The id post comments to which should be get
-     * @param showDeleted Show all if true, and all who not deleted if false
-     * @return The list comment
+     * Get all post comments
+     * @param postId the id post comments to which should be get
+     * @param showDeleted show all if true, and all who not deleted if false
+     * @return the list comments
      */
     @Override
     @Transactional(readOnly = true)
@@ -69,9 +69,9 @@ public class CommentDAOImpl extends BaseDAOImpl<Comment> implements CommentDAO {
     }
 
     /**
-     * Get all comments who are in the database
-     * @param showDeleted Show all if true, and all who not deleted if false
-     * @return The list comments
+     * Get all comments
+     * @param showDeleted show all if true, and all who not deleted if false
+     * @return the list comments
      */
     @Override
     @Transactional(readOnly = true)
@@ -88,9 +88,9 @@ public class CommentDAOImpl extends BaseDAOImpl<Comment> implements CommentDAO {
     }
 
     /**
-     * Get the comment with the required id
-     * @param id The id for find comment
-     * @return Comment with the required id
+     * Get comment by ID
+     * @param id the id for find comment
+     * @return comment with the required id
      */
     @Override
     @Transactional(readOnly = true)
@@ -101,8 +101,8 @@ public class CommentDAOImpl extends BaseDAOImpl<Comment> implements CommentDAO {
     }
 
     /**
-     * Update comment text
-     * @param comment The comment to update
+     * Update comment
+     * @param comment the comment to update
      */
     @Override
     public void update(Comment comment) {
@@ -111,8 +111,8 @@ public class CommentDAOImpl extends BaseDAOImpl<Comment> implements CommentDAO {
     }
 
     /**
-     * Makes a logical deletion of the comment
-     * @param id The id of the comment you want to delete
+     * Logically delete comment
+     * @param id the id of the comment you want to delete
      */
     @Override
     public void delete(String id) {
