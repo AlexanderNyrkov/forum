@@ -5,12 +5,12 @@ import io.shuritter.spring.model.Comment;
 import io.shuritter.spring.model.Post;
 import io.shuritter.spring.model.User;
 import io.shuritter.spring.service.CommentService;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -37,9 +37,10 @@ public class CommentServiceImpl extends BaseServiceImpl<Comment> implements Comm
 
     /**
      * Create/Add new comment
+     *
      * @param comment the comment to be add
-     * @param user comment author
-     * @param post post to which the comment was written
+     * @param user    comment author
+     * @param post    post to which the comment was written
      */
     @Override
     public void add(Comment comment, User user, Post post) {
@@ -50,6 +51,7 @@ public class CommentServiceImpl extends BaseServiceImpl<Comment> implements Comm
 
     /**
      * Get all comments
+     *
      * @param showDeleted show all if true, and all who not deleted if false
      * @return the list comments
      */
@@ -60,19 +62,8 @@ public class CommentServiceImpl extends BaseServiceImpl<Comment> implements Comm
     }
 
     /**
-     * Get all post comments
-     * @param postId the id post comments to which should be get
-     * @param showDeleted show all if true, and all who not deleted if false
-     * @return the list comment
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public List<Comment> getAll(Post postId, Boolean showDeleted) {
-        return DAO.getAll(postId, showDeleted);
-    }
-
-    /**
      * Get comment by ID
+     *
      * @param id the id for find comment
      * @return comment with the required id
      */
@@ -84,19 +75,21 @@ public class CommentServiceImpl extends BaseServiceImpl<Comment> implements Comm
 
     /**
      * Update comment
-     * @param id identifier of comment
+     *
+     * @param id      identifier of comment
      * @param updated the comment to update
      */
     @Override
     public void update(String id, Comment updated) {
         Comment comment = this.DAO.getById(id);
         comment.setText(updated.getText());
-        comment.setUpdatedAt(DateTime.now());
+        comment.setUpdatedAt(new Date());
         this.DAO.update(comment);
     }
 
     /**
      * Logically delete comment
+     *
      * @param id the id of the comment you want to delete
      */
     @Override

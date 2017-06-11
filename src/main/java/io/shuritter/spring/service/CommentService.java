@@ -12,6 +12,5 @@ import java.util.List;
  * @author Alexander Nyrkov
  */
 public interface CommentService extends BaseService<Comment> {
-    List<Comment> getAll(Post postId, Boolean showDeleted);
     void add(Comment comment, User user, Post post);
 }
