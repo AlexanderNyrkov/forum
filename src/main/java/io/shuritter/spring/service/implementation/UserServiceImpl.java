@@ -3,13 +3,13 @@ package io.shuritter.spring.service.implementation;
 import io.shuritter.spring.dao.UserDAO;
 import io.shuritter.spring.model.User;
 import io.shuritter.spring.service.UserService;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -31,6 +31,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
 
     /**
      * Create/Add new user
+     *
      * @param user the user to be add
      */
     @Override
@@ -41,6 +42,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
 
     /**
      * Get all users
+     *
      * @param showDeleted show all if true, and all who not deleted if false
      * @return the list users
      */
@@ -52,6 +54,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
 
     /**
      * Get user by ID
+     *
      * @param id the id for find user
      * @return user with the required id
      */
@@ -63,7 +66,8 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
 
     /**
      * Update user
-     * @param id identifier of user
+     *
+     * @param id      identifier of user
      * @param updated the user to update
      */
     @Override
@@ -73,12 +77,13 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
         user.setName(updated.getName());
         user.setPassword(BCrypt.hashpw(updated.getPassword(), BCrypt.gensalt()));
         user.setEmail(updated.getEmail());
-        user.setUpdatedAt(DateTime.now());
+        user.setUpdatedAt(new Date());
         this.DAO.update(user);
     }
 
     /**
      * Logically delete user
+     *
      * @param id the id of the user you want to delete
      */
     @Override

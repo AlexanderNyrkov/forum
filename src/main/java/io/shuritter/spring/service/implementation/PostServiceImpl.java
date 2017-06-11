@@ -4,12 +4,12 @@ import io.shuritter.spring.dao.PostDAO;
 import io.shuritter.spring.model.Post;
 import io.shuritter.spring.model.User;
 import io.shuritter.spring.service.PostService;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Named;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -35,6 +35,7 @@ public class PostServiceImpl extends BaseServiceImpl<Post> implements PostServic
 
     /**
      * Create/Add new post
+     *
      * @param post the post to be add
      * @param user post author
      */
@@ -46,6 +47,7 @@ public class PostServiceImpl extends BaseServiceImpl<Post> implements PostServic
 
     /**
      * Get all posts
+     *
      * @param showDeleted show all if true, and all who not deleted if false
      * @return the list posts
      */
@@ -57,6 +59,7 @@ public class PostServiceImpl extends BaseServiceImpl<Post> implements PostServic
 
     /**
      * Get post by ID
+     *
      * @param id identifier of post
      * @return post with the required id
      */
@@ -69,19 +72,20 @@ public class PostServiceImpl extends BaseServiceImpl<Post> implements PostServic
 
     /**
      * Update post
-     * @param id identifier of post
+     *
+     * @param id      identifier of post
      * @param updated the post to update
      */
     @Override
     public void update(String id, Post updated) {
         Post post = this.DAO.getById(id);
         post.setText(updated.getText());
-        post.setUpdatedAt(DateTime.now());
-        this.DAO.update(post);
+        post.setUpdatedAt(new Date());
     }
 
     /**
      * Logically delete post
+     *
      * @param id the id of the post you want to delete
      */
     @Override
