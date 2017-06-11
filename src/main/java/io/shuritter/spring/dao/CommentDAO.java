@@ -11,5 +11,5 @@ import java.util.List;
  * @author Alexander Nyrkov
  */
 public interface CommentDAO extends BaseDAO<Comment> {
-    List<Comment> getAll(Post postId, Boolean showDeleted);
+
 }
