@@ -2,7 +2,9 @@ package io.shuritter.spring.dao.implementation;
 
 import io.shuritter.spring.dao.BaseDAO;
 import io.shuritter.spring.model.BaseEntity;
-import org.hibernate.SessionFactory;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 /**
  * Abstract base class that implements basic DAO methods
@@ -11,5 +13,6 @@ import org.hibernate.SessionFactory;
  * @author Alexander Nyrkov
  */
 abstract class BaseDAOImpl<T extends BaseEntity> implements BaseDAO<T> {
-    protected SessionFactory sessionFactory;
+    @PersistenceContext
+    protected EntityManager entityManager;
 }
