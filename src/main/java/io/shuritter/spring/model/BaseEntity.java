@@ -15,7 +15,6 @@ import javax.persistence.MappedSuperclass;
 import java.io.Serializable;
 import java.util.Date;
 
-import static javax.persistence.GenerationType.IDENTITY;
 import static org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME;
 
 /**
