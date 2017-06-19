@@ -3,6 +3,9 @@ package io.shuritter.spring.model;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Column;
@@ -21,10 +24,21 @@ import static org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME
  */
 @MappedSuperclass
 @EqualsAndHashCode
+@ToString
 public abstract class BaseEntity implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = IDENTITY)
+    @GeneratedValue( generator = "uuid" )
+    @GenericGenerator(
+            name = "uuid",
+            strategy = "org.hibernate.id.UUIDGenerator",
+            parameters = {
+                    @Parameter(
+                            name = "uuid_gen_strategy_class",
+                            value = "org.hibernate.id.uuid.CustomVersionOneStrategy"
+                    )
+            }
+    )
     @Column(name = "ID")
     @Getter
     @Setter
