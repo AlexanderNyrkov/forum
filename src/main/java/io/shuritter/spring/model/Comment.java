@@ -49,6 +49,11 @@ public class Comment extends BaseEntity {
         this.like = 0L;
     }
 
+    public Comment(String text) {
+        super();
+        this.text = text;
+    }
+
     public Comment(User userId, String text, Post postId) {
         super();
         this.userId = userId;
