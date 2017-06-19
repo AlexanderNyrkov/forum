@@ -51,6 +51,11 @@ public class Post extends BaseEntity {
         this.like = 0L;
     }
 
+    public Post(String text) {
+        super();
+        this.text = text;
+    }
+
     public Post(String text, User userId, List<Comment> comments) {
         super();
         this.like = 0L;
