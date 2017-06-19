@@ -12,7 +12,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.List;
 
-import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.CascadeType.MERGE;
 import static javax.persistence.FetchType.EAGER;
 
 /**
@@ -52,13 +52,13 @@ public class User extends BaseEntity {
 
 
     @JsonManagedReference(value = "1")
-    @OneToMany(fetch = EAGER, mappedBy= "userId", cascade = ALL)
+    @OneToMany(fetch = EAGER, mappedBy= "userId", cascade = MERGE)
     @Setter @Getter
     private List<Post> posts;
 
 
     @JsonManagedReference(value = "2")
-    @OneToMany(fetch = EAGER, mappedBy = "userId", cascade = ALL)
+    @OneToMany(fetch = EAGER, mappedBy = "userId", cascade = MERGE)
     @Setter @Getter
     private List<Comment> comments;
 
@@ -69,6 +69,13 @@ public class User extends BaseEntity {
     public User() {
         super();
         this.isAdmin = false;
+    }
+
+    public User(String name, String login, String password, String email) {
+        this.name = name;
+        this.login = login;
+        this.password = password;
+        this.email = email;
     }
 
     public User(String name, String login, String password, String email, Boolean isAdmin, List<Post> posts, List<Comment> comments) {
