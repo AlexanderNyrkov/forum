@@ -1,18 +1,16 @@
+-- auto-generated definition
 create table post
 (
-  id text default gen_random_uuid() not null
+  id VARCHAR(255) not null
     constraint post_pkey
     primary key,
   created_at timestamp default now() not null,
-  text text not null,
+  text VARCHAR(255) not null,
   like_count bigint default 0 not null,
   updated_at timestamp default now() not null,
-  user_id text not null
-    constraint fkk57duahs09p84ac63gbqbvx9v
-    references "user"
+  user_id VARCHAR(255) not null
     constraint post_user_id_fk
-    references "user"
-    on update cascade on delete cascade,
+    references "user",
   is_deleted boolean default false not null
 )
 ;
@@ -20,3 +18,4 @@ create table post
 create unique index post_id_uindex
   on post (id)
 ;
+
