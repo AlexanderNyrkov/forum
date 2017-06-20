@@ -1,12 +1,12 @@
 create table "user"
 (
-  id text default gen_random_uuid() not null
+  id VARCHAR(255) not null
     constraint user_pkey
     primary key,
-  login text not null,
-  name text not null,
-  password text not null,
-  email text not null,
+  login VARCHAR(255) not null,
+  name VARCHAR(255) not null,
+  password VARCHAR(255) not null,
+  email VARCHAR(255) not null,
   created_at timestamp default now() not null,
   is_deleted boolean default false not null,
   updated_at timestamp default now() not null,
@@ -17,3 +17,15 @@ create table "user"
 create unique index user_login_uindex
   on "user" (login)
 ;
+
+create unique index user_email_uindex
+  on "user" (email)
+;
+
+INSERT INTO "user" (login, name, password, email, is_admin) VALUES (
+  'admin',
+  'admin',
+  'admin',
+  'admin@gmail.com',
+  TRUE
+);
