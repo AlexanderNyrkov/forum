@@ -19,3 +19,4 @@ create unique index post_id_uindex
   on post (id)
 ;
 
+COMMIT;

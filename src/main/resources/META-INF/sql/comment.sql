@@ -22,3 +22,4 @@ create unique index comment_id_uindex
   on comment (id)
 ;
 
+COMMIT;
